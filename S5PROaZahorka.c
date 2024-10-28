@@ -34,32 +34,72 @@ typedef struct
     char nom[30];             // Nom du joueur, demandé en début de partie
 } Joueur;
 
-Navire creer_navire(int indice_navire, Joueur *joueur, char select[3], bool aleatoire); // Constructeur - Navire
-Joueur initialiser_joueur(char select[3], int indice);                                  // Constructeur - Joueur
-
-int est_coordonnees(char select[3]);
-bool verifier_commande(char select[3]); // Sous-programme qui check chaque saisie de l'utilisateur
 bool instructions(char select[3]);
-bool position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10]);
-void remplir_grille(char grille[10][10]);
-void afficher_ligne_grille(char grille[10][10], int i);
-void afficher_grille(char grille[10][10]);
-void afficher_les_noms(Joueur *attaquant, Joueur *defenseur);
-void afficher_grilles(Joueur *attaquant, Joueur *defenseur);
-void placer_navires(Joueur *joueur, char select[3]);
-void placer_navires_IA(Joueur *joueur, char select[3]);
-void maj_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice);
-bool etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX);
-void update_navires(Joueur *attaquant, Joueur *defenseur);
-bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3]);
-bool joueur_a_perdu(Joueur *joueur);
-void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA);
-void lancer_partie(char select[3]);
-void menu_principal(char select[3]);
 
 int est_coordonnees(char select[3])
 {
     return strlen(select) == 3 && isdigit(select[0]) && select[1] == '-' && isdigit(select[2]);
+}
+
+bool verifier_commande(char select[3])
+{
+    if (strcmp(select, "Q") == 0)
+    {
+        return false; // Quitte le jeu
+    }
+    else if (strcmp(select, "T") == 0)
+    {
+        printf("Fin du programme.\n");
+        exit(0); // Termine complètement le programme
+    }
+    else if (strcmp(select, "I") == 0)
+    {
+        instructions(select); // Affiche les instructions
+        return true;
+    }
+    return true; // Si aucune commande spéciale n'est saisie, le jeu continue
+}
+
+bool position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10])
+{
+    if (orientation == 'N' && pos_y >= longueur - 1 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9)
+    {
+        for (int j = 0; j < longueur; j++)
+        {
+            if (grille[pos_y - j][pos_x] == 'N')
+                return false;
+        }
+        return true;
+    }
+    else if (orientation == 'E' && pos_y >= 0 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9 - longueur + 1)
+    {
+        for (int j = 0; j < longueur; j++)
+        {
+            if (grille[pos_y][pos_x + j] == 'N')
+                return false;
+        }
+        return true;
+    }
+    else if (orientation == 'S' && pos_y >= 0 && pos_y <= 9 - longueur + 1 && pos_x >= 0 && pos_x <= 9)
+    {
+        for (int j = 0; j < longueur; j++)
+        {
+            if (grille[pos_y + j][pos_x] == 'N')
+                return false;
+        }
+        return true;
+    }
+    else if (orientation == 'O' && pos_y >= 0 && pos_y <= 9 && pos_x >= longueur - 1 && pos_x <= 9)
+    {
+        for (int j = 0; j < longueur; j++)
+        {
+            if (grille[pos_y][pos_x - j] == 'N')
+                return false;
+        }
+        return true;
+    }
+    else
+        return false;
 }
 
 Navire creer_navire(int indice_navire, Joueur *joueur, char select[3], bool aleatoire)
@@ -167,135 +207,6 @@ Navire creer_navire_IA(int indice_navire, Joueur *joueur, char select[3], bool a
     return navire;
 }
 
-Joueur initialiser_joueur(char select[3], int indice)
-{
-    Joueur joueur;
-    remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
-    remplir_grille(joueur.grille_tirs);
-    joueur.indice=indice;
-    printf("\n--- Initialisation du Joueur %d ---\n", indice);
-    do
-    {
-        printf("Entrez votre nom : ");
-        scanf("%s", select);
-        if (!verifier_commande(select))
-        {
-            return joueur;
-        }
-    } while (strcmp(select, "Q") == 0);
-
-    strcpy(joueur.nom, select);      // Utilise strcpy pour copier le nom
-    placer_navires(&joueur, select); // Pointeur pour que les navires soient référencés dans les attributs du joueur
-    return joueur;
-    
-}
-
-Joueur initialiser_joueur_IA(char select[3], int indice)
-{
-    Joueur joueur;
-    joueur.indice=indice;
-    remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
-    remplir_grille(joueur.grille_tirs);
-    if (indice==1) {
-        printf("\n--- Initialisation du Joueur ---\n");
-        strcpy(joueur.nom,"Joueur");
-    }
-    else{
-        strcpy(joueur.nom,"l'ordinateur");
-    }
-    placer_navires_IA(&joueur, select); // Pointeur pour que les navires soient référencés dans les attributs du joueur
-    return joueur;
-}
-
-
-bool verifier_commande(char select[3])
-{
-    if (strcmp(select, "Q") == 0)
-    {
-        return false; // Quitte le jeu
-    }
-    else if (strcmp(select, "T") == 0)
-    {
-        printf("Fin du programme.\n");
-        exit(0); // Termine complètement le programme
-    }
-    else if (strcmp(select, "I") == 0)
-    {
-        instructions(select); // Affiche les instructions
-        return true;
-    }
-    return true; // Si aucune commande spéciale n'est saisie, le jeu continue
-}
-
-bool instructions(char select[3])
-{
-    printf("\n---------------------------------\n");
-    printf("       Instructions du jeu       \n");
-    printf("---------------------------------\n");
-
-    printf("Bienvenue dans le jeu de Bataille Navale.\n\n");
-    printf("Vous avez 5 navires de tailles disparates :\n");
-    printf(" - Porte-avions (5 cases)\n - Croiseur (4 cases)\n - Destroyer (3 cases)\n - Sous-marin (3 cases)\n - Torpilleur (2 cases)\n");
-    printf("\nVotre mission est de couler les navires ennemis.\n");
-    printf("Vous placerez vos navires sur une grille de 10x10 cases.\n");
-    printf("Les directions sont N (Nord), S (Sud), O (Ouest) et E (Est).\n");
-    printf("\nCommandes globales, que vous pouvez utiliser tout au long de la partie :\n");
-    printf(" - Q : Quitter les instructions, le menu principal ou la partie en cours\n");
-    printf(" - T : Terminer le programme\n");
-    printf(" - I : Revoir les instructions\n");
-    printf("---------------------------------\n");
-    do
-    {
-        printf("Entrez Q pour fermer les instructions : "); // Revient au menu principal ou à la partie en cours
-        scanf("%s", select);
-        if (!verifier_commande(select))
-            return false;
-    } while (strcmp(select, "Q") != 0);
-    return true; // Continuer le jeu si une autre commande est entrée
-}
-
-bool position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10])
-{
-    if (orientation == 'N' && pos_y >= longueur - 1 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y - j][pos_x] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else if (orientation == 'E' && pos_y >= 0 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9 - longueur + 1)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y][pos_x + j] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else if (orientation == 'S' && pos_y >= 0 && pos_y <= 9 - longueur + 1 && pos_x >= 0 && pos_x <= 9)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y + j][pos_x] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else if (orientation == 'O' && pos_y >= 0 && pos_y <= 9 && pos_x >= longueur - 1 && pos_x <= 9)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y][pos_x - j] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else
-        return false;
-}
-
 void remplir_grille(char grille[10][10])
 {
     for (int i = 0; i < 10; i++)
@@ -339,6 +250,159 @@ void afficher_grille(char grille[10][10])
         printf("\n");
     }
 }
+
+void placer_navires(Joueur *joueur, char select[3])
+{
+    bool aleatoire = false;
+    do
+    {
+        printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
+        printf("O (Oui) ou N (Non) : ");
+        scanf("%s", select);
+        if (!verifier_commande(select))
+        {
+            return;
+        }
+    } while (strcmp(select, "Q") == 0);
+
+    if (strcmp(select, "O") == 0)
+    {
+        aleatoire = true;
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        joueur->navires[i] = creer_navire(i, joueur, select, aleatoire);
+        if (strcmp(select, "Q") == 0)
+            return; // Si l'utilisateur veut quitter
+
+        for (int j = 0; j < joueur->navires[i].longueur; j++)
+        {
+            if (joueur->navires[i].orientation == 'N')
+                joueur->grille[joueur->navires[i].pos_y - j][joueur->navires[i].pos_x] = 'N';
+            else if (joueur->navires[i].orientation == 'E')
+                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x + j] = 'N';
+            else if (joueur->navires[i].orientation == 'S')
+                joueur->grille[joueur->navires[i].pos_y + j][joueur->navires[i].pos_x] = 'N';
+            else
+                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
+        }
+        if (!aleatoire || i == 4)
+            afficher_grille(joueur->grille);
+    }
+}
+
+Joueur initialiser_joueur(char select[3], int indice)
+{
+    Joueur joueur;
+    remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
+    remplir_grille(joueur.grille_tirs);
+    joueur.indice=indice;
+    printf("\n--- Initialisation du Joueur %d ---\n", indice);
+    do
+    {
+        printf("Entrez votre nom : ");
+        scanf("%s", select);
+        if (!verifier_commande(select))
+        {
+            return joueur;
+        }
+    } while (strcmp(select, "Q") == 0);
+
+    strcpy(joueur.nom, select);      // Utilise strcpy pour copier le nom
+    placer_navires(&joueur, select); // Pointeur pour que les navires soient référencés dans les attributs du joueur
+    return joueur;
+    
+}
+
+void placer_navires_IA(Joueur *joueur, char select[3])
+{
+    bool aleatoire = false;
+    if (joueur->indice==1){
+        do
+        {
+            printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
+            printf("O (Oui) ou N (Non) : ");
+            scanf("%s", select);
+            if (!verifier_commande(select))
+            {
+                return;
+            }
+        } while (strcmp(select, "Q") == 0);
+
+        if (strcmp(select, "O") == 0)
+        {
+            aleatoire = true;
+        }
+    }
+    if (joueur->indice==2) aleatoire=true;
+
+    for (int i = 0; i < 5; i++)
+    {
+        joueur->navires[i] = creer_navire_IA(i, joueur, select, aleatoire);
+        if (strcmp(select, "Q") == 0)
+            return; // Si l'utilisateur veut quitter
+
+        for (int j = 0; j < joueur->navires[i].longueur; j++)
+        {
+            if (joueur->navires[i].orientation == 'N')
+                joueur->grille[joueur->navires[i].pos_y - j][joueur->navires[i].pos_x] = 'N';
+            else if (joueur->navires[i].orientation == 'E')
+                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x + j] = 'N';
+            else if (joueur->navires[i].orientation == 'S')
+                joueur->grille[joueur->navires[i].pos_y + j][joueur->navires[i].pos_x] = 'N';
+            else
+                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
+        }
+        if (!aleatoire || (i == 4 && joueur->indice==1))
+            afficher_grille(joueur->grille);
+    }
+}
+
+Joueur initialiser_joueur_IA(char select[3], int indice)
+{
+    Joueur joueur;
+    joueur.indice=indice;
+    remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
+    remplir_grille(joueur.grille_tirs);
+    if (indice==1) {
+        printf("\n--- Initialisation du Joueur ---\n");
+        strcpy(joueur.nom,"Joueur");
+    }
+    else{
+        strcpy(joueur.nom,"l'ordinateur");
+    }
+    placer_navires_IA(&joueur, select); // Pointeur pour que les navires soient référencés dans les attributs du joueur
+    return joueur;
+}
+
+bool instructions(char select[3])
+{
+    printf("\n---------------------------------\n");
+    printf("       Instructions du jeu       \n");
+    printf("---------------------------------\n");
+
+    printf("Bienvenue dans le jeu de Bataille Navale.\n\n");
+    printf("Vous avez 5 navires de tailles disparates :\n");
+    printf(" - Porte-avions (5 cases)\n - Croiseur (4 cases)\n - Destroyer (3 cases)\n - Sous-marin (3 cases)\n - Torpilleur (2 cases)\n");
+    printf("\nVotre mission est de couler les navires ennemis.\n");
+    printf("Vous placerez vos navires sur une grille de 10x10 cases.\n");
+    printf("Les directions sont N (Nord), S (Sud), O (Ouest) et E (Est).\n");
+    printf("\nCommandes globales, que vous pouvez utiliser tout au long de la partie :\n");
+    printf(" - Q : Quitter les instructions, le menu principal ou la partie en cours\n");
+    printf(" - T : Terminer le programme\n");
+    printf(" - I : Revoir les instructions\n");
+    printf("---------------------------------\n");
+    do
+    {
+        printf("Entrez Q pour fermer les instructions : "); // Revient au menu principal ou à la partie en cours
+        scanf("%s", select);
+        if (!verifier_commande(select))
+            return false;
+    } while (strcmp(select, "Q") != 0);
+    return true; // Continuer le jeu si une autre commande est entrée
+}
+
+
 
 void afficher_les_noms(Joueur *attaquant, Joueur *defenseur)
 {
@@ -407,90 +471,6 @@ void afficher_grilles(Joueur *attaquant, Joueur *defenseur) // Affichage des gri
         printf("\n");
     }
     afficher_les_noms(attaquant, defenseur);
-}
-
-void placer_navires(Joueur *joueur, char select[3])
-{
-    bool aleatoire = false;
-    do
-    {
-        printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
-        printf("O (Oui) ou N (Non) : ");
-        scanf("%s", select);
-        if (!verifier_commande(select))
-        {
-            return;
-        }
-    } while (strcmp(select, "Q") == 0);
-
-    if (strcmp(select, "O") == 0)
-    {
-        aleatoire = true;
-    }
-    for (int i = 0; i < 5; i++)
-    {
-        joueur->navires[i] = creer_navire(i, joueur, select, aleatoire);
-        if (strcmp(select, "Q") == 0)
-            return; // Si l'utilisateur veut quitter
-
-        for (int j = 0; j < joueur->navires[i].longueur; j++)
-        {
-            if (joueur->navires[i].orientation == 'N')
-                joueur->grille[joueur->navires[i].pos_y - j][joueur->navires[i].pos_x] = 'N';
-            else if (joueur->navires[i].orientation == 'E')
-                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x + j] = 'N';
-            else if (joueur->navires[i].orientation == 'S')
-                joueur->grille[joueur->navires[i].pos_y + j][joueur->navires[i].pos_x] = 'N';
-            else
-                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
-        }
-        if (!aleatoire || i == 4)
-            afficher_grille(joueur->grille);
-    }
-}
-
-void placer_navires_IA(Joueur *joueur, char select[3])
-{
-    bool aleatoire = false;
-    if (joueur->indice==1){
-        do
-        {
-            printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
-            printf("O (Oui) ou N (Non) : ");
-            scanf("%s", select);
-            if (!verifier_commande(select))
-            {
-                return;
-            }
-        } while (strcmp(select, "Q") == 0);
-
-        if (strcmp(select, "O") == 0)
-        {
-            aleatoire = true;
-        }
-    }
-    if (joueur->indice==2) aleatoire=true;
-
-    for (int i = 0; i < 5; i++)
-    {
-        joueur->navires[i] = creer_navire_IA(i, joueur, select, aleatoire);
-        if (strcmp(select, "Q") == 0)
-            return; // Si l'utilisateur veut quitter
-
-        for (int j = 0; j < joueur->navires[i].longueur; j++)
-        {
-            if (joueur->navires[i].orientation == 'N')
-                joueur->grille[joueur->navires[i].pos_y - j][joueur->navires[i].pos_x] = 'N';
-            else if (joueur->navires[i].orientation == 'E')
-                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x + j] = 'N';
-            else if (joueur->navires[i].orientation == 'S')
-                joueur->grille[joueur->navires[i].pos_y + j][joueur->navires[i].pos_x] = 'N';
-            else
-                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
-        }
-        if (!aleatoire || (i == 4 && joueur->indice==1))
-            afficher_grille(joueur->grille);
-    }
 }
 
 void maj_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice)
