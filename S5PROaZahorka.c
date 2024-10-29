@@ -1,4 +1,5 @@
 /*Projet FIPMIK3 - Augustin ZAHORKA - Bataille Navale*/
+// Ancienne version, tout le code au même endroit. La nouvelle version est dans les autres fichiers.
 
 // Gestion des bibiliothèques
 #include <stdio.h>
