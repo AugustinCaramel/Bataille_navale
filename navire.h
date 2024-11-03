@@ -11,10 +11,6 @@ typedef struct
     char orientation; // N pour Nord, E pour Est, S pour Sud, O pour Ouest
 } Navire;
 
-
-
-// Les fonctions prennent maintenant des pointeurs vers struct Joueur
-Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char select[3], bool aleatoire);
-Navire creer_navire_IA(int indice_navire, int indice, char grille[10][10], char select[3], bool aleatoire);
+Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char select[3], bool aleatoire, bool IA, int indice);
 
 #endif // NAVIRE_H

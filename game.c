@@ -13,64 +13,60 @@ void menu_principal(char select[3])
         printf("Votre choix : ");
         scanf("%s", select);
 
+        int niveau = 0;
+
         // Vérifie si l'utilisateur entre une commande spéciale
         if (!verifier_commande(select))
             return; // Quitte le programme si "T" est entré
         if (strcmp(select, "P") == 0)
-            lancer_partie(select);
-        
-        if (strcmp(select, "O") == 0){
-            choix_niveau(select);
+            lancer_partie(select, false, niveau);
+
+        if (strcmp(select, "O") == 0)
+        {
+            choix_niveau(select, &niveau);
+            if (strcmp(select, "Q") != 0)
+                lancer_partie(select, true, niveau);
         }
     } while (strcmp(select, "T") != 0);
 }
 
-void lancer_partie(char select[3])
+void choix_niveau(char select[3], int *niveau)
 {
-    Joueur joueur1 = initialiser_joueur(select, 1);
+
+    do
+    {
+        printf("\n  1. Niveau 1 : l'ordinateur joue en mode random");
+        printf("\n  2. Niveau 2 : l'ordinateur utilise quelques techniques");
+        printf("\n  3. Niveau 3 : l'ordinateur utilise des algorithmes plus intelligents");
+        printf("\n  Q. Revenir au menu principal");
+        printf("\n\nVotre choix : ");
+
+        scanf("%s", select);
+        if (!verifier_commande(select))
+            return;
+
+        if ((strcmp(select, "1") != 0 && strcmp(select, "2") != 0 && strcmp(select, "3") != 0))
+            printf("Saisie incorrecte.\n");
+
+    } while (strcmp(select, "1") != 0 && strcmp(select, "2") != 0 && strcmp(select, "3") != 0);
+    sscanf(select, "%d", niveau);
+}
+
+void lancer_partie(char select[3], bool IA, int niveau)
+{
+    afficher_type_partie(IA, niveau);
+    Joueur joueur1 = initialiser_joueur(select, 1, IA);
     if (strcmp(select, "Q") == 0)
         return; // Si joueur 1 quitte
 
-    Joueur joueur2 = initialiser_joueur(select, 2);
+    Joueur joueur2 = initialiser_joueur(select, 2, IA);
     if (strcmp(select, "Q") == 0)
         return; // Si joueur 2 quitte
 
-    lancer_tours(&joueur1, &joueur2, select, false);
+    lancer_tours(&joueur1, &joueur2, select, IA, niveau);
 }
 
-void partie_IA_1(char select[3])
-{
-    Joueur joueur1 = initialiser_joueur_IA(select, 1);
-    if (strcmp(select, "Q") == 0)
-        return; // Si joueur 1 quitte
-
-    Joueur joueur2 = initialiser_joueur_IA(select, 2);
-    if (strcmp(select, "Q") == 0)
-        return; // Si joueur 2 quitte
-
-    printf("Joueur 1 et 2 : %s %s\n", joueur1.nom, joueur2.nom);
-
-    lancer_tours(&joueur1, &joueur2, select, true);
-}
-
-void choix_niveau(char select[3]){
-    printf("\n  1. Niveau 1 : l'ordinateur joue en mode random");
-    printf("\n  2. Niveau 2 : l'ordinateur utilise quelques techniques");
-    printf("\n  3. Niveau 3 : l'ordinateur utilise des algorithmes plus intelligents");
-    printf("\n  Q. Revenir au menu principal");
-    printf("\n\nVotre choix : ");
-    scanf("%s", select);
-
-    if (!verifier_commande(select))
-        return; // Quitte le programme si "T" est entré
-
-    if (strcmp(select, "1") == 0)partie_IA_1(select);
-    else if (strcmp(select, "2") == 0)partie_IA_1(select);
-    else if (strcmp(select, "3") == 0)partie_IA_1(select);
-
-}
-
-void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA)
+void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int niveau)
 {
     int tours = 0;
     bool touche;
@@ -80,8 +76,10 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA)
         if (tours % 2 == 0)
         {
             if (!rebelote)
-                if (IA) printf("\n--- Votre tour ---\n", joueur1->nom);
-                else printf("\n--- Tour de %s ---\n", joueur1->nom);
+                if (IA)
+                    printf("\n--- Votre tour ---\n", joueur1->nom);
+                else
+                    printf("\n--- Tour de %s ---\n", joueur1->nom);
             touche = tirer(joueur1, joueur2, select); // Joueur 1 tire sur Joueur 2
             if (strcmp(select, "Q") == 0)
                 return;
@@ -90,8 +88,10 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA)
         {
             if (!rebelote)
                 printf("\n--- Tour de %s ---\n", joueur2->nom);
-            if (IA) touche = tirer_IA_1(joueur2, joueur1, select); // Joueur 2 tire sur Joueur 1
-            else {
+            if (IA)
+                touche = tirer_1(joueur2, joueur1, select); // Joueur 2 tire sur Joueur 1
+            else
+            {
                 touche = tirer(joueur2, joueur1, select); // Joueur 2 tire sur Joueur 1
                 if (strcmp(select, "Q") == 0)
                     return;
@@ -99,12 +99,12 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA)
         }
 
         // Ajoute une fonction pour vérifier si un joueur a perdu
-        if (joueur_a_perdu(joueur2))
+        if (verifier_joueur_a_perdu(joueur2))
         {
             printf("\n%s est vainqueur de cette partie !\n", joueur1->nom);
             break;
         }
-        else if (joueur_a_perdu(joueur1))
+        else if (verifier_joueur_a_perdu(joueur1))
         {
             printf("\n%s est vainqueur de cette partie !\n", joueur2->nom);
             break;
@@ -121,6 +121,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA)
         }
     }
 }
+
 bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
 {
     int y, x;
@@ -157,13 +158,7 @@ bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
     }
 }
 
-bool tir_utile(int x, int y, Joueur *attaquant){
-    if (attaquant->grille_tirs[y][x]=='.'){
-        return true;
-    }
-}
-
-bool tirer_IA_1(Joueur *attaquant, Joueur *defenseur, char select[3])
+bool tirer_1(Joueur *attaquant, Joueur *defenseur, char select[3])
 {
     sleep(2);
     int y, x;
@@ -171,7 +166,7 @@ bool tirer_IA_1(Joueur *attaquant, Joueur *defenseur, char select[3])
     {
         y = rand() % 10;
         x = rand() % 10;
-    } while (!tir_utile(x,y,attaquant)); // Vérifie que le tir n'a pas déjà été tenté
+    } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
 
     // Vérifie si le tir touche un navire
     if (defenseur->grille[y][x] == 'N')

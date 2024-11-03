@@ -13,13 +13,13 @@ bool verifier_commande(char select[3])
     }
     else if (strcmp(select, "I") == 0)
     {
-        instructions(select); // Affiche les instructions
+        afficher_instructions(select); // Affiche les instructions
         return true;
     }
     return true; // Si aucune commande spéciale n'est saisie, le jeu continue
 }
 
-bool instructions(char select[3])
+bool afficher_instructions(char select[3])
 {
     printf("\n---------------------------------\n");
     printf("       Instructions du jeu       \n");
@@ -45,7 +45,7 @@ bool instructions(char select[3])
     } while (strcmp(select, "Q") != 0);
     return true; // Continuer le jeu si une autre commande est entrée
 }
-int est_coordonnees(char select[3])
+int verifier_format_coordonnees(char select[3])
 {
     return strlen(select) == 3 && isdigit(select[0]) && select[1] == '-' && isdigit(select[2]);
 }
@@ -93,7 +93,7 @@ void remplir_grille(char grille[10][10])
     }
 }
 
-bool position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10])
+bool verifier_position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10])
 {
     if (orientation == 'N' && pos_y >= longueur - 1 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9)
     {
@@ -135,5 +135,96 @@ bool position_valide(int pos_y, int pos_x, char orientation, int longueur, char 
         return false;
 }
 
+void affichage_placements(bool IA, int indice, char type[15], int longueur, char nom[30])
+{
+    if (IA && indice == 1)
+    {
+        printf("\nPlacement du %s (%d cases).\n", type, longueur);
+    }
+    else if (!IA)
+    {
+        printf("\nPlacement du %s (%d cases) pour %s.\n", type, longueur, nom);
+    }
+}
 
+void demander_coordonnees(char select[3], int *pos_x, int *pos_y)
+{
+    do
+    {
+        printf("\nEntrez la position Y-X : ");
+        scanf("%s", select); // On utilise select pour accueillir toutes les saisies de l'utilisateur, afin de mettre en place des commandes universelles
+        if (!verifier_commande(select))
+            return;
+    } while (!verifier_format_coordonnees(select));
+    sscanf(select, "%d-%d", pos_y, pos_x);
+}
 
+void demander_orientation(char select[3], char *orientation)
+{
+    do
+    {
+        printf("Entrez l'orientation (N, S, O, E) : ");
+        scanf("%s", select);
+        if (!verifier_commande(select))
+            return;
+    } while (strcmp(select, "N") != 0 && strcmp(select, "S") != 0 && strcmp(select, "O") != 0 && strcmp(select, "E") != 0);
+    sscanf(select, "%c", orientation);
+}
+void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30])
+{
+    char nomA[50], nomB[50];   // Augmenter la taille pour tenir compte de la concaténation
+    char tempA[50], tempB[50]; // Chaînes temporaires pour la concaténation
+    
+    strcpy(nomA, (att_indice == 1) ? att_nom : def_nom);
+    strcpy(nomB, (att_indice == 1) ? def_nom : att_nom);
+
+    // Concaténer "Tirs de " avec les noms
+    strcpy(tempA, "Tirs de ");
+    strcat(tempA, nomA); // "Tirs de attaquant"
+
+    strcpy(tempB, "Tirs de ");
+    strcat(tempB, nomB); // "Tirs de defenseur"
+
+    // Copier le résultat final dans nomA et nomB
+    strcpy(nomA, tempA);
+    strcpy(nomB, tempB);
+
+    int largeur = 35; // Largeur d'une grille avec espacement
+    int longueur_nomA = strlen(nomA);
+    int longueur_nomB = strlen(nomB);
+
+    int espacesAvantNomA = (largeur - longueur_nomA) / 2;
+    int espacesAvantNomB = (largeur - longueur_nomB) / 2;
+
+    printf("\n%*s%s%*s", espacesAvantNomA, "", nomA, espacesAvantNomA, ""); // Centrer le nomA
+    printf("%*s%s\n", espacesAvantNomB, "", nomB);                          // Centrer le nomB
+}
+
+void initialiser_nom(char nom[30], char select[3], bool IA, int indice){
+    if (!IA || indice == 1)
+    {
+        printf("Entrez votre nom : ");
+        scanf("%s", select);
+        if (!verifier_commande(select))
+        {
+            return ;
+        }
+        strcpy(nom, select);
+    }
+    else
+    {
+        strcpy(nom, "l'ordinateur");
+    }
+}
+bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
+    if (grille_tirs[y][x]=='.'){
+        return true;
+    }
+}
+
+void afficher_type_partie(bool IA, int niveau){
+    if (IA)
+        printf("\nPartie contre l'ordinateur : niveau %d\n",niveau);
+    else
+        printf("\nPartie classique : Joueur vs Joueur\n");
+}
