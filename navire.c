@@ -12,6 +12,7 @@ Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char s
     navire.etat = true;                                 // Le navire est en bon état à sa création (n'est pas coulé)
 
     affichage_placements(IA, indice, navire.type, navire.longueur, nom);
+    printf("test");
 
     do
     {
