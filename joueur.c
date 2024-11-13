@@ -1,5 +1,70 @@
 #include "joueur.h"
 
+Joueur initialiser_joueur(char select[3], int indice, bool IA)
+{
+    Joueur joueur;
+    remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
+    remplir_grille(joueur.grille_tirs);
+    joueur.indice = indice;
+
+    if (IA && indice == 1)
+        printf("\n--- Initialisation du Joueur ---\n");
+    else if (!IA)
+        printf("\n--- Initialisation du Joueur %d ---\n", indice);
+
+    initialiser_nom(joueur.nom, select, IA, indice);
+    if (strcmp(select, "Q") == 0)
+        return joueur;
+
+    placer_navires(&joueur, select, IA); // Pointeur pour que les navires soient référencés dans les attributs du joueur
+    return joueur;
+}
+
+void placer_navires(Joueur *joueur, char select[3], bool IA)
+{
+    bool aleatoire = (IA && joueur->indice == 2) ? true : false;
+
+    if (!(IA && joueur->indice == 2))
+    {
+        do
+        {
+            printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
+            printf("O (Oui) ou N (Non) : ");
+            scanf("%s", select);
+            if (!verifier_commande(select))
+            {
+                return;
+            }
+        } while (!strcmp(select, "O") == 0 && !strcmp(select, "N") == 0);
+
+        if (strcmp(select, "O") == 0)
+        {
+            aleatoire = true;
+        }
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        joueur->navires[i] = creer_navire(i, joueur->nom, joueur->grille, select, aleatoire, IA, joueur->indice);
+        if (strcmp(select, "Q") == 0)
+            return; // Si l'utilisateur veut quitter
+
+        for (int j = 0; j < joueur->navires[i].longueur; j++)
+        {
+            if (joueur->navires[i].orientation == 'N')
+                joueur->grille[joueur->navires[i].pos_y - j][joueur->navires[i].pos_x] = 'N';
+            else if (joueur->navires[i].orientation == 'E')
+                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x + j] = 'N';
+            else if (joueur->navires[i].orientation == 'S')
+                joueur->grille[joueur->navires[i].pos_y + j][joueur->navires[i].pos_x] = 'N';
+            else
+                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
+        }
+        if (!aleatoire || i == 4 && (!IA || IA && joueur->indice == 1)) // déterminé avec tableau de Karnaugh, c'était sympa
+            afficher_grille(joueur->grille);
+    }
+}
+
 void afficher_grilles(Joueur *attaquant, Joueur *defenseur) // Affichage des grilles de tirs des deux joueurs côte-côte
 {
     char(*grilleA)[10], (*grilleB)[10]; // Pour considérer Grilles A et B comme des pointeurs.
@@ -50,6 +115,7 @@ bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int
             return true;
         }
     }
+    return false;
 }
 
 void update_navires(Joueur *attaquant, Joueur *defenseur)
@@ -59,6 +125,7 @@ void update_navires(Joueur *attaquant, Joueur *defenseur)
         if (defenseur->navires[i].etat)
         {
             bool navire_ok = false;
+
             if (defenseur->navires[i].orientation == 'N')
             {
                 navire_ok = verifier_etat_navire(defenseur, i, -1, 0);
@@ -75,6 +142,7 @@ void update_navires(Joueur *attaquant, Joueur *defenseur)
             {
                 navire_ok = verifier_etat_navire(defenseur, i, 0, 1);
             }
+
             if (!navire_ok)
             {
                 defenseur->navires[i].etat = false;
@@ -100,68 +168,4 @@ bool verifier_joueur_a_perdu(Joueur *joueur)
         }
     }
     return true; // Tous les navires sont coulés
-}
-
-void placer_navires(Joueur *joueur, char select[3], bool IA)
-{
-    bool aleatoire = (IA && joueur->indice == 2) ? true : false;
-    if (!(IA && joueur->indice == 2))
-    {
-        do
-        {
-            printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
-            printf("O (Oui) ou N (Non) : ");
-            scanf("%s", select);
-            if (!verifier_commande(select))
-            {
-                return;
-            }
-        } while (strcmp(select, "Q") == 0);
-
-        if (strcmp(select, "O") == 0)
-        {
-            aleatoire = true;
-        }
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        joueur->navires[i] = creer_navire(i, joueur->nom, joueur->grille, select, aleatoire, IA, joueur->indice);
-        if (strcmp(select, "Q") == 0)
-            return; // Si l'utilisateur veut quitter
-
-        for (int j = 0; j < joueur->navires[i].longueur; j++)
-        {
-            if (joueur->navires[i].orientation == 'N')
-                joueur->grille[joueur->navires[i].pos_y - j][joueur->navires[i].pos_x] = 'N';
-            else if (joueur->navires[i].orientation == 'E')
-                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x + j] = 'N';
-            else if (joueur->navires[i].orientation == 'S')
-                joueur->grille[joueur->navires[i].pos_y + j][joueur->navires[i].pos_x] = 'N';
-            else
-                joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
-        }
-        if (!aleatoire || i == 4 && (!IA || IA && joueur->indice == 1)) // déterminé avec tableau de Karnaugh, c'était sympa
-            afficher_grille(joueur->grille);
-    }
-}
-
-Joueur initialiser_joueur(char select[3], int indice, bool IA)
-{
-    Joueur joueur;
-    remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
-    remplir_grille(joueur.grille_tirs);
-    joueur.indice = indice;
-
-    if (IA && indice == 1)
-        printf("\n--- Initialisation du Joueur ---\n");
-    else if (!IA)
-        printf("\n--- Initialisation du Joueur %d ---\n", indice);
-
-    initialiser_nom(joueur.nom, select, IA, indice);
-    if (strcmp(select, "Q") == 0)
-                return joueur;
-
-    placer_navires(&joueur, select, IA); // Pointeur pour que les navires soient référencés dans les attributs du joueur
-    return joueur;
 }

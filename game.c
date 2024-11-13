@@ -32,7 +32,6 @@ void menu_principal(char select[3])
 
 void choix_niveau(char select[3], int *niveau)
 {
-
     do
     {
         printf("\n  1. Niveau 1 : l'ordinateur joue en mode random");
@@ -68,18 +67,20 @@ void lancer_partie(char select[3], bool IA, int niveau)
 
 void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int niveau)
 {
-    int tours = 0;
+    int compteur_tours = 0;
     bool touche;
     bool rebelote = false;
     while (true)
     {
-        if (tours % 2 == 0)
+        if (compteur_tours % 2 == 0)
         {
             if (!rebelote)
+            {
                 if (IA)
-                    printf("\n--- Votre tour ---\n", joueur1->nom);
+                    printf("\n--- Votre tour ---\n");
                 else
                     printf("\n--- Tour de %s ---\n", joueur1->nom);
+            }
             touche = tirer(joueur1, joueur2, select); // Joueur 1 tire sur Joueur 2
             if (strcmp(select, "Q") == 0)
                 return;
@@ -112,7 +113,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int
 
         if (!touche)
         {
-            tours++;
+            compteur_tours++;
             rebelote = false;
         }
         else
@@ -145,7 +146,7 @@ bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
     }
     else if (defenseur->grille[y][x] == 'X')
     {
-        printf("\nDans l'eau... !\n");
+        printf("\nDans le mille (bis...)\n");
         afficher_grilles(attaquant, defenseur);
         return false;
     }
@@ -176,12 +177,6 @@ bool tirer_1(Joueur *attaquant, Joueur *defenseur, char select[3])
         defenseur->grille[y][x] = 'X';      // Marque le navire touché
         update_navires(attaquant, defenseur);
         return true;
-    }
-    else if (defenseur->grille[y][x] == 'X')
-    {
-        printf("\nDans l'eau... !\n");
-        afficher_grilles(attaquant, defenseur);
-        return false;
     }
     else
     {

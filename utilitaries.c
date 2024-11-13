@@ -4,7 +4,7 @@ bool verifier_commande(char select[3])
 {
     if (strcmp(select, "Q") == 0)
     {
-        return false; // Quitte le jeu
+        return false; // Retour en arrière, quitter
     }
     else if (strcmp(select, "T") == 0)
     {
@@ -218,11 +218,14 @@ void initialiser_nom(char nom[30], char select[3], bool IA, int indice){
         strcpy(nom, "l'ordinateur");
     }
 }
+
+
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
     if (grille_tirs[y][x]=='.'){
         return true;
     }
 }
+
 
 void afficher_type_partie(bool IA, int niveau){
     if (IA)

@@ -21,8 +21,8 @@
 
 // Fonctions de plus bas niveau : ne font appel à aucune autre fonction, ou alors une fonction du même fichier
 
-bool verifier_commande(char select[3]);
-bool afficher_instructions(char select[3]);
+bool verifier_commande(char select[3]); // Termine le programme si select = T, renvoie false si select = Q, affiche les instructions si select = I, et renvoie true si select != Q et != T
+bool afficher_instructions(char select[3]); // Affiche les instructions
 int verifier_format_coordonnees(char select[3]);
 void afficher_ligne_grille(char grille[10][10], int i);
 void afficher_grille(char grille[10][10]);

@@ -8,5 +8,4 @@ int main()
     char select[3];
     menu_principal(select);
     return 0; // Terminer après la partie
-    printf("test");
 }

@@ -4,6 +4,7 @@ const char types_navires[5][100] = {"Porte-avions", "Croiseur", "Destroyer", "So
 const int longueurs_navires[5] = {5, 4, 3, 3, 2};
 const char directions[4] = {'N', 'S', 'O', 'E'};
 
+
 Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char select[3], bool aleatoire, bool IA, int indice)
 {
     Navire navire;
@@ -19,7 +20,7 @@ Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char s
         {
             navire.pos_y = rand() % 10;
             navire.pos_x = rand() % 10;
-            navire.orientation = directions[indice_navire % 4];
+            navire.orientation = directions[rand() % 4];
         }
         else
         {
