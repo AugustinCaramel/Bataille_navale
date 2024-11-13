@@ -45,10 +45,12 @@ bool afficher_instructions(char select[3])
     } while (strcmp(select, "Q") != 0);
     return true; // Continuer le jeu si une autre commande est entrée
 }
+
 int verifier_format_coordonnees(char select[3])
 {
     return strlen(select) == 3 && isdigit(select[0]) && select[1] == '-' && isdigit(select[2]);
 }
+
 void afficher_ligne_grille(char grille[10][10], int i)
 {
     for (int j = 0; j < 10; j++)
