@@ -1,4 +1,4 @@
-/*Projet FIPMIK3 - Augustin ZAHORKA - Bataille Navale*/
+/*Projet FIPMIK3 - Augustin ZAHORKA et Thomas KEMPF-DRIESBACH - Bataille Navale*/
 
 #include "game.h"
 
