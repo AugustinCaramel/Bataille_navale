@@ -19,6 +19,7 @@ bool verifier_commande(char select[3])
     return true; // Si aucune commande spéciale n'est saisie, le jeu continue
 }
 
+
 bool afficher_instructions(char select[3])
 {
     printf("\n---------------------------------\n");
@@ -46,10 +47,12 @@ bool afficher_instructions(char select[3])
     return true; // Continuer le jeu si une autre commande est entrée
 }
 
+
 int verifier_format_coordonnees(char select[3])
 {
     return strlen(select) == 3 && isdigit(select[0]) && select[1] == '-' && isdigit(select[2]);
 }
+
 
 void afficher_ligne_grille(char grille[10][10], int i)
 {
@@ -66,6 +69,7 @@ void afficher_ligne_grille(char grille[10][10], int i)
             printf(" . "); // Case vide
     }
 }
+
 
 void afficher_grille(char grille[10][10])
 {
@@ -84,6 +88,7 @@ void afficher_grille(char grille[10][10])
     }
 }
 
+
 void remplir_grille(char grille[10][10])
 {
     for (int i = 0; i < 10; i++)
@@ -94,6 +99,7 @@ void remplir_grille(char grille[10][10])
         }
     }
 }
+
 
 bool verifier_position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10])
 {
@@ -137,6 +143,7 @@ bool verifier_position_valide(int pos_y, int pos_x, char orientation, int longue
         return false;
 }
 
+
 void affichage_placements(bool IA, int indice, char type[15], int longueur, char nom[30])
 {
     if (IA && indice == 1)
@@ -148,6 +155,7 @@ void affichage_placements(bool IA, int indice, char type[15], int longueur, char
         printf("\nPlacement du %s (%d cases) pour %s.\n", type, longueur, nom);
     }
 }
+
 
 void demander_coordonnees(char select[3], int *pos_x, int *pos_y)
 {
@@ -161,6 +169,7 @@ void demander_coordonnees(char select[3], int *pos_x, int *pos_y)
     sscanf(select, "%d-%d", pos_y, pos_x);
 }
 
+
 void demander_orientation(char select[3], char *orientation)
 {
     do
@@ -172,6 +181,8 @@ void demander_orientation(char select[3], char *orientation)
     } while (strcmp(select, "N") != 0 && strcmp(select, "S") != 0 && strcmp(select, "O") != 0 && strcmp(select, "E") != 0);
     sscanf(select, "%c", orientation);
 }
+
+
 void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30])
 {
     char nomA[50], nomB[50];   // Augmenter la taille pour tenir compte de la concaténation
@@ -201,6 +212,7 @@ void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30])
     printf("\n%*s%s%*s", espacesAvantNomA, "", nomA, espacesAvantNomA, ""); // Centrer le nomA
     printf("%*s%s\n", espacesAvantNomB, "", nomB);                          // Centrer le nomB
 }
+
 
 void initialiser_nom(char nom[30], char select[3], bool IA, int indice){
     if (!IA || indice == 1)

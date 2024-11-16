@@ -30,6 +30,7 @@ void menu_principal(char select[3])
     } while (strcmp(select, "T") != 0);
 }
 
+
 void choix_niveau(char select[3], int *niveau)
 {
     do
@@ -64,6 +65,7 @@ void lancer_partie(char select[3], bool IA, int niveau)
 
     lancer_tours(&joueur1, &joueur2, select, IA, niveau);
 }
+
 
 void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int niveau)
 {
@@ -123,6 +125,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int
     }
 }
 
+
 bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
 {
     int y, x;
@@ -158,6 +161,7 @@ bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
         return false;
     }
 }
+
 
 bool tirer_1(Joueur *attaquant, Joueur *defenseur, char select[3])
 {

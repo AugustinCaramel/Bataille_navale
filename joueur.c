@@ -20,6 +20,7 @@ Joueur initialiser_joueur(char select[3], int indice, bool IA)
     return joueur;
 }
 
+
 void placer_navires(Joueur *joueur, char select[3], bool IA)
 {
     bool aleatoire = (IA && joueur->indice == 2) ? true : false;
@@ -65,6 +66,7 @@ void placer_navires(Joueur *joueur, char select[3], bool IA)
     }
 }
 
+
 void afficher_grilles(Joueur *attaquant, Joueur *defenseur) // Affichage des grilles de tirs des deux joueurs côte-côte
 {
     char(*grilleA)[10], (*grilleB)[10]; // Pour considérer Grilles A et B comme des pointeurs.
@@ -91,6 +93,7 @@ void afficher_grilles(Joueur *attaquant, Joueur *defenseur) // Affichage des gri
     afficher_noms_joueurs(attaquant->indice, attaquant->nom, defenseur->nom);
 }
 
+
 void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice)
 {
     for (int i = 0; i < attaquant->navires[indice].longueur; i++)
@@ -106,6 +109,7 @@ void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice)
     }
 }
 
+
 bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX)
 {
     for (int j = 0; j < defenseur->navires[indice_navire].longueur; j++)
@@ -117,6 +121,7 @@ bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int
     }
     return false;
 }
+
 
 void update_navires(Joueur *attaquant, Joueur *defenseur)
 {
@@ -156,6 +161,7 @@ void update_navires(Joueur *attaquant, Joueur *defenseur)
         }
     }
 }
+
 
 bool verifier_joueur_a_perdu(Joueur *joueur)
 {
