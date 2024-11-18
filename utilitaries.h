@@ -19,20 +19,22 @@
 #define ROUGE "\x1b[31m"
 #define VERT "\x1b[32m"
 
+char saisie[3]; // Variable globale pour les saisies
+
 // Fonctions de plus bas niveau : ne font appel à aucune autre fonction, ou alors une fonction du même fichier
 
-bool verifier_commande(char select[3]); // Termine le programme si select = T, renvoie false si select = Q, affiche les instructions si select = I, et renvoie true si select != Q et != T
-bool afficher_instructions(char select[3]); // Affiche les instructions
-int verifier_format_coordonnees(char select[3]);
+bool verifier_commande(); // Termine le programme si saisie = T, renvoie false si saisie = Q, affiche les instructions si saisie = I, et renvoie true si saisie != Q et != T
+bool afficher_instructions(); // Affiche les instructions
+int verifier_format_coordonnees();
 void afficher_ligne_grille(char grille[10][10], int i);
 void afficher_grille(char grille[10][10]);
 void remplir_grille(char grille[10][10]);
 bool verifier_position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10]);
 void affichage_placements(bool IA, int indice, char type[15], int longueur, char nom[30]);
-void demander_coordonnees(char select[3], int *pos_x, int *pos_y);
-void demander_orientation(char select[3], char *orientation);
+void demander_coordonnees(int *pos_x, int *pos_y);
+void demander_orientation(char *orientation);
 void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30]);
-void initialiser_nom(char nom[30], char select[3], bool IA, int indice);
+void initialiser_nom(char nom[30], bool IA, int indice);
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]);
 void afficher_type_partie(bool IA, int niveau);
 

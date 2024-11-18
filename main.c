@@ -5,7 +5,6 @@
 int main()
 {
     srand(time(NULL));
-    char select[3];
-    menu_principal(select);
+    menu_principal();
     return 0; // Terminer après la partie
 }

@@ -5,7 +5,7 @@ const int longueurs_navires[5] = {5, 4, 3, 3, 2};
 const char directions[4] = {'N', 'S', 'O', 'E'};
 
 
-Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char select[3], bool aleatoire, bool IA, int indice)
+Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], bool aleatoire, bool IA, int indice)
 {
     Navire navire;
     strcpy(navire.type, types_navires[indice_navire]);  // Initialisation du type de navire
@@ -24,12 +24,12 @@ Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], char s
         }
         else
         {
-            demander_coordonnees(select, &navire.pos_y, &navire.pos_x);
-            if (strcmp(select, "Q") == 0)
+            demander_coordonnees(&navire.pos_y, &navire.pos_x);
+            if (strcmp(saisie, "Q") == 0)
                 return navire;
 
-            demander_orientation(select, &navire.orientation);
-            if (strcmp(select, "Q") == 0)
+            demander_orientation(&navire.orientation);
+            if (strcmp(saisie, "Q") == 0)
                 return navire;
 
             if (!verifier_position_valide(navire.pos_y, navire.pos_x, navire.orientation, navire.longueur, grille))

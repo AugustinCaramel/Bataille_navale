@@ -1,26 +1,26 @@
 #include "utilitaries.h"
 
-bool verifier_commande(char select[3])
+bool verifier_commande()
 {
-    if (strcmp(select, "Q") == 0)
+    if (strcmp(saisie, "Q") == 0)
     {
         return false; // Retour en arrière, quitter
     }
-    else if (strcmp(select, "T") == 0)
+    else if (strcmp(saisie, "T") == 0)
     {
         printf("Fin du programme.\n");
         exit(0); // Termine complètement le programme
     }
-    else if (strcmp(select, "I") == 0)
+    else if (strcmp(saisie, "I") == 0)
     {
-        afficher_instructions(select); // Affiche les instructions
+        afficher_instructions(); // Affiche les instructions
         return true;
     }
     return true; // Si aucune commande spéciale n'est saisie, le jeu continue
 }
 
 
-bool afficher_instructions(char select[3])
+bool afficher_instructions()
 {
     printf("\n---------------------------------\n");
     printf("       Instructions du jeu       \n");
@@ -40,17 +40,17 @@ bool afficher_instructions(char select[3])
     do
     {
         printf("Entrez Q pour fermer les instructions : "); // Revient au menu principal ou à la partie en cours
-        scanf("%s", select);
-        if (!verifier_commande(select))
+        scanf("%s", saisie);
+        if (!verifier_commande())
             return false;
-    } while (strcmp(select, "Q") != 0);
+    } while (strcmp(saisie, "Q") != 0);
     return true; // Continuer le jeu si une autre commande est entrée
 }
 
 
-int verifier_format_coordonnees(char select[3])
+int verifier_format_coordonnees()
 {
-    return strlen(select) == 3 && isdigit(select[0]) && select[1] == '-' && isdigit(select[2]);
+    return strlen(saisie) == 3 && isdigit(saisie[0]) && saisie[1] == '-' && isdigit(saisie[2]);
 }
 
 
@@ -157,29 +157,29 @@ void affichage_placements(bool IA, int indice, char type[15], int longueur, char
 }
 
 
-void demander_coordonnees(char select[3], int *pos_x, int *pos_y)
+void demander_coordonnees(int *pos_x, int *pos_y)
 {
     do
     {
         printf("\nEntrez la position Y-X : ");
-        scanf("%s", select); // On utilise select pour accueillir toutes les saisies de l'utilisateur, afin de mettre en place des commandes universelles
-        if (!verifier_commande(select))
+        scanf("%s", saisie); // On utilise saisie pour accueillir toutes les saisies de l'utilisateur, afin de mettre en place des commandes universelles
+        if (!verifier_commande())
             return;
-    } while (!verifier_format_coordonnees(select));
-    sscanf(select, "%d-%d", pos_y, pos_x);
+    } while (!verifier_format_coordonnees());
+    sscanf(saisie, "%d-%d", pos_y, pos_x);
 }
 
 
-void demander_orientation(char select[3], char *orientation)
+void demander_orientation(char *orientation)
 {
     do
     {
         printf("Entrez l'orientation (N, S, O, E) : ");
-        scanf("%s", select);
-        if (!verifier_commande(select))
+        scanf("%s", saisie);
+        if (!verifier_commande())
             return;
-    } while (strcmp(select, "N") != 0 && strcmp(select, "S") != 0 && strcmp(select, "O") != 0 && strcmp(select, "E") != 0);
-    sscanf(select, "%c", orientation);
+    } while (strcmp(saisie, "N") != 0 && strcmp(saisie, "S") != 0 && strcmp(saisie, "O") != 0 && strcmp(saisie, "E") != 0);
+    sscanf(saisie, "%c", orientation);
 }
 
 
@@ -214,16 +214,16 @@ void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30])
 }
 
 
-void initialiser_nom(char nom[30], char select[3], bool IA, int indice){
+void initialiser_nom(char nom[30], bool IA, int indice){
     if (!IA || indice == 1)
     {
         printf("Entrez votre nom : ");
-        scanf("%s", select);
-        if (!verifier_commande(select))
+        scanf("%s", saisie);
+        if (!verifier_commande())
         {
             return ;
         }
-        strcpy(nom, select);
+        strcpy(nom, saisie);
     }
     else
     {

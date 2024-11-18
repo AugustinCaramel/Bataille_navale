@@ -1,6 +1,6 @@
 #include "joueur.h"
 
-Joueur initialiser_joueur(char select[3], int indice, bool IA)
+Joueur initialiser_joueur(int indice, bool IA)
 {
     Joueur joueur;
     remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
@@ -12,16 +12,16 @@ Joueur initialiser_joueur(char select[3], int indice, bool IA)
     else if (!IA)
         printf("\n--- Initialisation du Joueur %d ---\n", indice);
 
-    initialiser_nom(joueur.nom, select, IA, indice);
-    if (strcmp(select, "Q") == 0)
+    initialiser_nom(joueur.nom, IA, indice);
+    if (strcmp(saisie, "Q") == 0)
         return joueur;
 
-    placer_navires(&joueur, select, IA); // Pointeur pour que les navires soient référencés dans les attributs du joueur
+    placer_navires(&joueur, IA); // Pointeur pour que les navires soient référencés dans les attributs du joueur
     return joueur;
 }
 
 
-void placer_navires(Joueur *joueur, char select[3], bool IA)
+void placer_navires(Joueur *joueur, bool IA)
 {
     bool aleatoire = (IA && joueur->indice == 2) ? true : false;
 
@@ -31,14 +31,14 @@ void placer_navires(Joueur *joueur, char select[3], bool IA)
         {
             printf("\nVoulez-vous que l'ordinateur place vos navires ?\n");
             printf("O (Oui) ou N (Non) : ");
-            scanf("%s", select);
-            if (!verifier_commande(select))
+            scanf("%s", saisie);
+            if (!verifier_commande())
             {
                 return;
             }
-        } while (!strcmp(select, "O") == 0 && !strcmp(select, "N") == 0);
+        } while (!strcmp(saisie, "O") == 0 && !strcmp(saisie, "N") == 0);
 
-        if (strcmp(select, "O") == 0)
+        if (strcmp(saisie, "O") == 0)
         {
             aleatoire = true;
         }
@@ -46,8 +46,8 @@ void placer_navires(Joueur *joueur, char select[3], bool IA)
 
     for (int i = 0; i < 5; i++)
     {
-        joueur->navires[i] = creer_navire(i, joueur->nom, joueur->grille, select, aleatoire, IA, joueur->indice);
-        if (strcmp(select, "Q") == 0)
+        joueur->navires[i] = creer_navire(i, joueur->nom, joueur->grille, aleatoire, IA, joueur->indice);
+        if (strcmp(saisie, "Q") == 0)
             return; // Si l'utilisateur veut quitter
 
         for (int j = 0; j < joueur->navires[i].longueur; j++)

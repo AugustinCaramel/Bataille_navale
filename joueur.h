@@ -3,6 +3,8 @@
 
 #include "navire.h"
 
+extern char saisie[3]; // Variable globale pour les saisies
+
 typedef struct
 {
     int indice;               // 1 ou 2, pour simplifier l'affichage des grilles
@@ -12,8 +14,8 @@ typedef struct
     char nom[30];             // Nom du joueur, demandé en début de partie
 } Joueur;
 
-Joueur initialiser_joueur(char select[3], int indice, bool IA); // Initialise les attributs du joueur : grilles, nom, placement des navires, indice (avec l'indice passé en paramètre)
-void placer_navires(Joueur *joueur, char select[3], bool IA); // Définit le mode aléatoire ou non, crée les 5 navires et les positionne sur la grille
+Joueur initialiser_joueur(int indice, bool IA); // Initialise les attributs du joueur : grilles, nom, placement des navires, indice (avec l'indice passé en paramètre)
+void placer_navires(Joueur *joueur, bool IA); // Définit le mode aléatoire ou non, crée les 5 navires et les positionne sur la grille
 void afficher_grilles(Joueur *attaquant, Joueur *defenseur);
 void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice); // Remplace les X par des N sur un navire, sur une grille de tirs, si le navire est coulé
 bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX); // Renvoie false si le navire est entièrement touché

@@ -1,6 +1,6 @@
 #include "game.h"
 
-void menu_principal(char select[3])
+void menu_principal()
 {
     do
     {
@@ -11,27 +11,27 @@ void menu_principal(char select[3])
         printf("Q. Quitter le menu principal\n");
         printf("----------------------\n");
         printf("Votre choix : ");
-        scanf("%s", select);
+        scanf("%s", saisie);
 
         int niveau = 0;
 
         // Vérifie si l'utilisateur entre une commande spéciale
-        if (!verifier_commande(select))
+        if (!verifier_commande())
             return; // Quitte le programme si "T" est entré
-        if (strcmp(select, "P") == 0)
-            lancer_partie(select, false, niveau);
+        if (strcmp(saisie, "P") == 0)
+            lancer_partie(false, niveau);
 
-        if (strcmp(select, "O") == 0)
+        if (strcmp(saisie, "O") == 0)
         {
-            choix_niveau(select, &niveau);
-            if (strcmp(select, "Q") != 0)
-                lancer_partie(select, true, niveau);
+            choix_niveau(&niveau);
+            if (strcmp(saisie, "Q") != 0)
+                lancer_partie(true, niveau);
         }
-    } while (strcmp(select, "T") != 0);
+    } while (strcmp(saisie, "T") != 0);
 }
 
 
-void choix_niveau(char select[3], int *niveau)
+void choix_niveau(int *niveau)
 {
     do
     {
@@ -41,33 +41,33 @@ void choix_niveau(char select[3], int *niveau)
         printf("\n  Q. Revenir au menu principal");
         printf("\n\nVotre choix : ");
 
-        scanf("%s", select);
-        if (!verifier_commande(select))
+        scanf("%s", saisie);
+        if (!verifier_commande())
             return;
 
-        if ((strcmp(select, "1") != 0 && strcmp(select, "2") != 0 && strcmp(select, "3") != 0))
+        if ((strcmp(saisie, "1") != 0 && strcmp(saisie, "2") != 0 && strcmp(saisie, "3") != 0))
             printf("Saisie incorrecte.\n");
 
-    } while (strcmp(select, "1") != 0 && strcmp(select, "2") != 0 && strcmp(select, "3") != 0);
-    sscanf(select, "%d", niveau);
+    } while (strcmp(saisie, "1") != 0 && strcmp(saisie, "2") != 0 && strcmp(saisie, "3") != 0);
+    sscanf(saisie, "%d", niveau);
 }
 
-void lancer_partie(char select[3], bool IA, int niveau)
+void lancer_partie(bool IA, int niveau)
 {
     afficher_type_partie(IA, niveau);
-    Joueur joueur1 = initialiser_joueur(select, 1, IA);
-    if (strcmp(select, "Q") == 0)
+    Joueur joueur1 = initialiser_joueur(1, IA);
+    if (strcmp(saisie, "Q") == 0)
         return; // Si joueur 1 quitte
 
-    Joueur joueur2 = initialiser_joueur(select, 2, IA);
-    if (strcmp(select, "Q") == 0)
+    Joueur joueur2 = initialiser_joueur(2, IA);
+    if (strcmp(saisie, "Q") == 0)
         return; // Si joueur 2 quitte
 
-    lancer_tours(&joueur1, &joueur2, select, IA, niveau);
+    lancer_tours(&joueur1, &joueur2, IA, niveau);
 }
 
 
-void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int niveau)
+void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
 {
     int compteur_tours = 0;
     bool touche;
@@ -83,8 +83,8 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int
                 else
                     printf("\n--- Tour de %s ---\n", joueur1->nom);
             }
-            touche = tirer(joueur1, joueur2, select); // Joueur 1 tire sur Joueur 2
-            if (strcmp(select, "Q") == 0)
+            touche = tirer(joueur1, joueur2); // Joueur 1 tire sur Joueur 2
+            if (strcmp(saisie, "Q") == 0)
                 return;
         }
         else
@@ -92,11 +92,11 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int
             if (!rebelote)
                 printf("\n--- Tour de %s ---\n", joueur2->nom);
             if (IA)
-                touche = tirer_1(joueur2, joueur1, select); // Joueur 2 tire sur Joueur 1
+                touche = tirer_1(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
             else
             {
-                touche = tirer(joueur2, joueur1, select); // Joueur 2 tire sur Joueur 1
-                if (strcmp(select, "Q") == 0)
+                touche = tirer(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
+                if (strcmp(saisie, "Q") == 0)
                     return;
             }
         }
@@ -126,16 +126,16 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, char select[3], bool IA, int
 }
 
 
-bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
+bool tirer(Joueur *attaquant, Joueur *defenseur)
 {
     int y, x;
     do
     {
         printf("\n%s, entrez la localisation de tir (Y-X) : ", attaquant->nom);
-        scanf("%s", select);
-        if (!verifier_commande(select))
+        scanf("%s", saisie);
+        if (!verifier_commande())
             break;
-        sscanf(select, "%d-%d", &y, &x);
+        sscanf(saisie, "%d-%d", &y, &x);
     } while (y < 0 || y > 9 || x < 0 || x > 9); // Vérifie que les coordonnées sont valides
 
     // Vérifie si le tir touche un navire
@@ -163,7 +163,7 @@ bool tirer(Joueur *attaquant, Joueur *defenseur, char select[3])
 }
 
 
-bool tirer_1(Joueur *attaquant, Joueur *defenseur, char select[3])
+bool tirer_1(Joueur *attaquant, Joueur *defenseur)
 {
     sleep(2);
     int y, x;
