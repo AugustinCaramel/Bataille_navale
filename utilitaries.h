@@ -18,6 +18,7 @@
 #define BLEU "\x1b[34m"
 #define ROUGE "\x1b[31m"
 #define VERT "\x1b[32m"
+#define JAUNE "\x1b[32m"
 
 char saisie[3]; // Variable globale pour les saisies
 
