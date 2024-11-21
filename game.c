@@ -189,4 +189,31 @@ bool tirer_1(Joueur *attaquant, Joueur *defenseur)
         afficher_grilles(attaquant, defenseur);
         return false;
     }
+
+    bool tirer_2(Joueur *attaquant, Joueur *defenseur)
+{
+    sleep(2);
+    int y, x;
+    do
+    {
+        y = rand() % 10;
+        x = rand() % 10;
+    } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
+
+    // Vérifie si le tir touche un navire
+    if (defenseur->grille[y][x] == 'N')
+    {
+        printf("\nDans le mille !\n");
+        attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
+        defenseur->grille[y][x] = 'X';      // Marque le navire touché
+        update_navires(attaquant, defenseur);
+        return true;
+    }
+    else
+    {
+        printf("\nDans l'eau...\n");
+        attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
+        afficher_grilles(attaquant, defenseur);
+        return false;
+    }
 }

@@ -11,5 +11,6 @@ void lancer_partie(bool IA, int niveau); // Initialise les deux joueurs et lance
 void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau);
 bool tirer(Joueur *attaquant, Joueur *defenseur);
 bool tirer_1(Joueur *attaquant, Joueur *defenseur);
+bool tirer_2(Joueur *attaquant, Joueur *defenseur);
 
 #endif // GAME_H
