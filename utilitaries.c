@@ -255,12 +255,6 @@ bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
     }
     return false;
 }
-    
-    
-    if (grille_tirs[y][x]=='.'){
-        return true;
-    }
-}
 
 
 void afficher_type_partie(bool IA, int niveau){
