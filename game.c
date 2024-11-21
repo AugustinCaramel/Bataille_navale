@@ -196,8 +196,10 @@ bool tirer_1(Joueur *attaquant, Joueur *defenseur)
         afficher_grilles(attaquant, defenseur);
         return false;
     }
+}
 
-    bool tirer_2(Joueur *attaquant, Joueur *defenseur)
+
+bool tirer_2(Joueur *attaquant, Joueur *defenseur)
 {
     sleep(2);
     int y, x;
