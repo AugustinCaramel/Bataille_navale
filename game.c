@@ -92,7 +92,14 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
             if (!rebelote)
                 printf("\n--- Tour de %s ---\n", joueur2->nom);
             if (IA)
-                touche = tirer_1(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
+                if(niveau == 1)
+                {
+                    touche = tirer_1(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
+                }
+                else if(niveau == 2)
+                {
+                    touche = tirer_2(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
+                }
             else
             {
                 touche = tirer(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
