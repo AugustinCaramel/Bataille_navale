@@ -238,6 +238,30 @@ bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
     }
 }
 
+bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
+    for (int ligne_y = 0; ligne_y <= 10; ligne_y++)
+    {
+        for (int colonne_x = 0; colonne_x <= 10; colonne_x++)
+        {
+            if (grille_tirs[ligne_y][colonne_x] == 'X')
+            {
+                x = colonne_x;
+                y = ligne_y;
+                return true;
+            }
+            
+        }
+        
+    }
+    return false;
+}
+    
+    
+    if (grille_tirs[y][x]=='.'){
+        return true;
+    }
+}
+
 
 void afficher_type_partie(bool IA, int niveau){
     if (IA)
