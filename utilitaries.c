@@ -270,7 +270,7 @@ void melanger_liste(int ordre_tir[4]){
         {
             depart = depart-4;
         }
-        ordre_tir[depart] = i;
+        ordre_tir[depart+i] = i;
     }
 }
 
@@ -294,7 +294,7 @@ bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
         if (ordre_tir[numero_tir] == 2)     // S
         {
             x_tir = *x;
-            y_tir = *y-1;
+            y_tir = *y+1;
         }
         if (ordre_tir[numero_tir] == 3)     // W
         {
@@ -306,9 +306,11 @@ bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
         {
             *x = x_tir;
             *y = y_tir;
+            printf("%C ",grille_tirs[y_tir][x_tir]);
             return true;
         }
     }
+    printf("error");
     return false;
 }
 
