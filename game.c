@@ -207,11 +207,19 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
 {
     sleep(2);
     int y, x;
-    do
+
+    if(trouver_tir_IA2(&x, &y, attaquant->grille_tirs))
     {
-        y = rand() % 10;
-        x = rand() % 10;
-    } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
+       printf("%d %d\n",x,y);
+    }
+    else
+    {
+        do
+        {
+            y = rand() % 10;
+            x = rand() % 10;
+        } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
+    }
 
     // Vérifie si le tir touche un navire
     if (defenseur->grille[y][x] == 'N')

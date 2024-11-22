@@ -245,8 +245,8 @@ bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
         {
             if (grille_tirs[ligne_y][colonne_x] == 'X')
             {
-                x = colonne_x;
-                y = ligne_y;
+                *x = colonne_x;
+                *y = ligne_y;
                 return true;
             }
             
