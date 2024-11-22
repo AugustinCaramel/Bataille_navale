@@ -20,7 +20,6 @@ Joueur initialiser_joueur(int indice, bool IA)
     return joueur;
 }
 
-
 void placer_navires(Joueur *joueur, bool IA)
 {
     bool aleatoire = (IA && joueur->indice == 2) ? true : false;
@@ -175,3 +174,4 @@ bool verifier_joueur_a_perdu(Joueur *joueur)
     }
     return true; // Tous les navires sont coulés
 }
+

@@ -1,5 +1,22 @@
 #include "game.h"
 
+Cible initialiser_cible()
+{
+    Cible cible;
+    cible.etat=false;
+    for (int i = 0; i <20; i++){
+        for (int j = 0; j <2;j++){
+            cible.touche_position[i][j] = -1;
+        }
+    }
+    for (int i = 0; i <20; i++){
+        cible.orientation[i] = false;
+    }
+    cible.nombre_touches=0;
+    return cible;
+}
+
+
 void menu_principal()
 {
     do
@@ -72,6 +89,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
     int compteur_tours = 0;
     bool touche;
     bool rebelote = false;
+    Cible cible = initialiser_cible();
     while (true)
     {
         if (compteur_tours % 2 == 0)
@@ -102,7 +120,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
                 }
                 else if(niveau == 3)
                 {
-                    touche = tirer_IA3(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
+                    touche = tirer_IA3(joueur2, joueur1, &cible); // Joueur 2 tire sur Joueur 1
                 }
             else
             {
@@ -231,31 +249,176 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
     }
 }
 
+bool update_navires_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (defenseur->navires[i].etat)
+        {
+            bool navire_ok = false;
 
-bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
+            if (defenseur->navires[i].orientation == 'N')
+            {
+                navire_ok = verifier_etat_navire(defenseur, i, -1, 0);
+            }
+            else if (defenseur->navires[i].orientation == 'S')
+            {
+                navire_ok = verifier_etat_navire(defenseur, i, 1, 0);
+            }
+            else if (defenseur->navires[i].orientation == 'O')
+            {
+                navire_ok = verifier_etat_navire(defenseur, i, 1, -1);
+            }
+            else if (defenseur->navires[i].orientation == 'E')
+            {
+                navire_ok = verifier_etat_navire(defenseur, i, 0, 1);
+            }
+
+            if (!navire_ok)
+            {
+                defenseur->navires[i].etat = false;
+                update_grille_tirs(defenseur, attaquant, i);
+                afficher_grilles(attaquant, defenseur);
+                printf("\nLe %s de %s a atteint le fond.\n", defenseur->navires[i].type, defenseur->nom);
+                actualiser_cible(cible, defenseur->navires[i]);
+                return true;
+            }
+            else if (i == 4)
+                afficher_grilles(attaquant, defenseur);
+        }
+    }
+    return false;
+}
+
+void actualiser_cible(Cible *cible,Navire navire){
+    int incry, incrx;
+    incry= (navire.orientation=='N') ? -1 : 0;
+    incry= (navire.orientation=='S') ? 1 : 0;
+    incrx= (navire.orientation=='E') ? 1 : 0;
+    incrx= (navire.orientation=='O') ? -1 : 0;
+
+    for (int i = 0; i < navire.longueur; i++){
+        for (int j = 0; j < cible->nombre_touches; j++){
+            if (cible->touche_position[j][0]==navire.pos_y+incry && cible->touche_position[j][1]==navire.pos_x+incrx){
+                decaler_gauche(cible, j);
+                cible->nombre_touches-=1;
+            }
+        }
+    }
+    if (cible->nombre_touches==0){
+        cible->etat=false;
+    };
+
+}
+
+void afficher_cible(Cible *cible){
+    printf("Cible : %d\n", cible->etat);
+    for (int j = 0; j <2; j++){
+        for (int i = 0; i <20;i++){
+            printf("%d ", cible->touche_position[i][j]);
+        }
+        printf("\n");
+    }
+    printf("Nombre de touches : %d\n", cible->nombre_touches);
+}
+
+
+void decaler_gauche(Cible *cible, int indice){
+
+    for (int i = indice; i < cible->nombre_touches; i++){
+        cible->touche_position[i][0]=cible->touche_position[i+1][0];
+        cible->touche_position[i][1]=cible->touche_position[i+1][1];
+    }
+}
+
+void decaler_droite(Cible *cible, int y, int x){
+    for (int i = 0; i < cible->nombre_touches; i++){
+        cible->touche_position[i+1][0]=cible->touche_position[i][0];
+        cible->touche_position[i+1][1]=cible->touche_position[i][1];
+    }
+    cible->touche_position[0][0]=y;
+    cible->touche_position[0][1]=x;
+}
+
+bool tirer_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
 {
     sleep(2);
     int y, x;
-    do
-    {
-        y = rand() % 10;
-        x = rand() % 10;
-    } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
-
-    // Vérifie si le tir touche un navire
-    if (defenseur->grille[y][x] == 'N')
-    {
-        printf("\nDans le mille !\n");
-        attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
-        defenseur->grille[y][x] = 'X';      // Marque le navire touché
-        update_navires(attaquant, defenseur);
-        return true;
+    afficher_cible(cible);
+    if (cible->etat){
+        int orientation = 0;
+        int position=0;
+        do {
+            if (orientation==0){
+                y=cible->touche_position[position][0]-1;
+                x=cible->touche_position[position][1];
+            }
+            else if (orientation==1){
+                y=cible->touche_position[position][0];
+                x=cible->touche_position[0][1]+1;
+            }
+            else if (orientation==2){
+                y=cible->touche_position[position][0]+1;
+                x=cible->touche_position[position][1];
+            }
+            else if (orientation==3){
+                y=cible->touche_position[position][0];
+                x=cible->touche_position[position][1]-1;
+            }
+            orientation++;
+            if (orientation==4){
+                orientation=0;
+                position++;
+            }
+        }
+        while (!verifier_tir_utile(x, y, attaquant->grille_tirs));
+        
+        if (defenseur->grille[y][x] == 'N')
+        {
+            printf("\nDans le mille !\n");
+            attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
+            defenseur->grille[y][x] = 'X';      // Marque le navire touché
+            if (!update_navires_IA3(attaquant, defenseur,cible));
+            {
+                decaler_droite(cible, y, x);
+                cible->nombre_touches+=1;
+            }
+            return true;
+        }
+        else
+        {
+            printf("\nDans l'eau...\n");
+            attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
+            afficher_grilles(attaquant, defenseur);
+            return false;
+        }
     }
-    else
-    {
-        printf("\nDans l'eau...\n");
-        attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
-        afficher_grilles(attaquant, defenseur);
-        return false;
+    else{
+        do
+        {
+            y = rand() % 10;
+            x = rand() % 10;
+        } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
+
+        // Vérifie si le tir touche un navire
+        if (defenseur->grille[y][x] == 'N')
+        {
+            printf("\nDans le mille !\n");
+            attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
+            defenseur->grille[y][x] = 'X';      // Marque le navire touché
+            update_navires(attaquant, defenseur);
+            cible->etat=true;
+            cible->nombre_touches=1;
+            cible->touche_position[0][0]=y;
+            cible->touche_position[0][1]=x;
+            return true;
+        }
+        else
+        {
+            printf("\nDans l'eau...\n");
+            attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
+            afficher_grilles(attaquant, defenseur);
+            return false;
+        }
     }
 }
