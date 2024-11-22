@@ -210,7 +210,10 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
 
     if(trouver_tir_IA2(&x, &y, attaquant->grille_tirs))
     {
-       printf("%d %d\n",x,y);
+        if (selectionner_tir_IA2(&x, &y,attaquant->grille_tirs))
+        {
+            printf("%d %d",x,y);
+        }
     }
     else
     {

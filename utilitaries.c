@@ -238,6 +238,7 @@ bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
     }
 }
 
+
 bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
     for (int ligne_y = 0; ligne_y <= 10; ligne_y++)
     {
@@ -252,6 +253,61 @@ bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
             
         }
         
+    }
+    return false;
+}
+
+
+void melanger_liste(int ordre_tir[4]){
+    int depart;
+
+    depart = rand() % 4;
+    depart = depart+1;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (depart+i > 4)
+        {
+            depart = depart-4;
+        }
+        ordre_tir[depart] = i;
+    }
+}
+
+
+bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
+    int direction_tir,y_tir,x_tir,ordre_tir[4] = {0,1,2,3};
+    
+    melanger_liste(ordre_tir);
+    for (int numero_tir = 1; numero_tir <= 4; numero_tir++)
+    {
+        if (ordre_tir[numero_tir] == 0)     // N
+        {
+            x_tir = *x;
+            y_tir = *y-1;
+        }
+        if (ordre_tir[numero_tir] == 1)     // E
+        {
+            x_tir = *x+1;
+            y_tir = *y;
+        }
+        if (ordre_tir[numero_tir] == 2)     // S
+        {
+            x_tir = *x;
+            y_tir = *y-1;
+        }
+        if (ordre_tir[numero_tir] == 3)     // W
+        {
+            x_tir = *x-1;
+            y_tir = *y;
+        }
+
+        if(verifier_tir_utile(x_tir, y_tir, grille_tirs))
+        {
+            *x = x_tir;
+            *y = y_tir;
+            return true;
+        }
     }
     return false;
 }
