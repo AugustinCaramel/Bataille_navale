@@ -233,8 +233,13 @@ void initialiser_nom(char nom[30], bool IA, int indice){
 
 
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
-    if (grille_tirs[y][x]=='.'){
+    if (grille_tirs[y][x]=='.')
+    {
         return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -277,7 +282,6 @@ void melanger_liste(int ordre_tir[4]){
 
 bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
     int direction_tir,y_tir,x_tir,ordre_tir[4] = {0,1,2,3};
-    
     melanger_liste(ordre_tir);
     for (int numero_tir = 1; numero_tir <= 4; numero_tir++)
     {
@@ -301,12 +305,11 @@ bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
             x_tir = *x-1;
             y_tir = *y;
         }
-
         if(verifier_tir_utile(x_tir, y_tir, grille_tirs))
         {
             *x = x_tir;
             *y = y_tir;
-            printf("%C ",grille_tirs[y_tir][x_tir]);
+            printf("grille tire:%C ",grille_tirs[y_tir][x_tir]);
             return true;
         }
     }

@@ -1,7 +1,5 @@
 /*Projet FIPMIK3 - Augustin ZAHORKA et Thomas KEMPF-DRIESBACH - Bataille Navale*/
 
-// COUCOU
-
 #include "game.h"
 
 int main()
