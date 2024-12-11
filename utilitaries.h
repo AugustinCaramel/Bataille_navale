@@ -39,7 +39,7 @@ void initialiser_nom(char nom[30], bool IA, int indice);
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]);
 void melanger_liste(int ordre_tir[4]);
 bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]);
-bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]);
+bool trouver_tir_IA2(int *x, int *y, int*last_x, int*last_y, char grille_tirs[10][10]);
 void afficher_type_partie(bool IA, int niveau);
 
 #endif // UTILITARIES_H

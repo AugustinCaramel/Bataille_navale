@@ -262,8 +262,8 @@ bool trouver_tir_IA2(int *x, int *y, int *last_x, int *last_y, char grille_tirs[
     }
     if (trouver == true)
     {
-                return true;
-            }
+        return true;
+    }
     else
     {
         return false;
