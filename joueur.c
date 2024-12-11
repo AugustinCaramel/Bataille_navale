@@ -141,7 +141,7 @@ void update_navires(Joueur *attaquant, Joueur *defenseur)
             }
             else if (defenseur->navires[i].orientation == 'O')
             {
-                navire_ok = verifier_etat_navire(defenseur, i, 1, -1);
+                navire_ok = verifier_etat_navire(defenseur, i, 0, -1);
             }
             else if (defenseur->navires[i].orientation == 'E')
             {
