@@ -206,13 +206,23 @@ bool tirer_IA1(Joueur *attaquant, Joueur *defenseur)
 bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
 {
     sleep(2);
-    int y, x;
+    int y, x,last_y = 11,last_x = 11;
+    bool retenter = false;
 
-    if(trouver_tir_IA2(&x, &y, attaquant->grille_tirs))
+    do
     {
+        if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
+        {
         if (selectionner_tir_IA2(&x, &y,attaquant->grille_tirs))
         {
             printf("x:%d y:%d",x,y);
+                retenter = false;
+            }
+            else
+            {
+                last_x = x;
+                last_y = y;
+                retenter = true;
         }
     }
     else
@@ -221,8 +231,11 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
         {
             y = rand() % 10;
             x = rand() % 10;
+                retenter = false;
         } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
     }
+    } while (retenter);
+    
 
     // Vérifie si le tir touche un navire
     if (defenseur->grille[y][x] == 'N')
