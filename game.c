@@ -213,9 +213,9 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
     {
         if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
         {
-        if (selectionner_tir_IA2(&x, &y,attaquant->grille_tirs))
-        {
-            printf("x:%d y:%d",x,y);
+            if (selectionner_tir_IA2(&x, &y,attaquant->grille_tirs))
+            {
+                printf("x:%d y:%d",x,y);
                 retenter = false;
             }
             else
@@ -223,17 +223,17 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
                 last_x = x;
                 last_y = y;
                 retenter = true;
+            }
         }
-    }
-    else
-    {
-        do
+        else
         {
-            y = rand() % 10;
-            x = rand() % 10;
+            do
+            {
+                y = rand() % 10;
+                x = rand() % 10;
                 retenter = false;
-        } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
-    }
+            } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
+        }
     } while (retenter);
     
 

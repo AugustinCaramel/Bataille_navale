@@ -244,22 +244,30 @@ bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
 }
 
 
-bool trouver_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
+bool trouver_tir_IA2(int *x, int *y, int *last_x, int *last_y, char grille_tirs[10][10]){
+    bool trouver = false;
     for (int ligne_y = 0; ligne_y <= 10; ligne_y++)
     {
         for (int colonne_x = 0; colonne_x <= 10; colonne_x++)
         {
-            if (grille_tirs[ligne_y][colonne_x] == 'X')
+            if ((grille_tirs[ligne_y][colonne_x] == 'X') && (ligne_y  <= *last_y) && (colonne_x <= *last_y))
             {
                 *x = colonne_x;
                 *y = ligne_y;
-                return true;
+                trouver = true;
             }
-            
+            printf(" %d %d %d %d /",ligne_y,colonne_x,*last_x,*last_y);
         }
         
     }
-    return false;
+    if (trouver == true)
+    {
+                return true;
+            }
+    else
+    {
+        return false;
+    }
 }
 
 
@@ -305,6 +313,7 @@ bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
             x_tir = *x-1;
             y_tir = *y;
         }
+        
         if(verifier_tir_utile(x_tir, y_tir, grille_tirs))
         {
             *x = x_tir;
