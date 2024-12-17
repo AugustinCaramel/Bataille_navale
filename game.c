@@ -3,19 +3,21 @@
 Cible initialiser_cible()
 {
     Cible cible;
-    cible.etat=false;
-    for (int i = 0; i <20; i++){
-        for (int j = 0; j <2;j++){
+    cible.etat = false;
+    for (int i = 0; i < 20; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
             cible.touche_position[i][j] = -1;
         }
     }
-    for (int i = 0; i <20; i++){
+    for (int i = 0; i < 4; i++)
+    {
         cible.orientation[i] = false;
     }
-    cible.nombre_touches=0;
+    cible.nombre_touches = 0;
     return cible;
 }
-
 
 void menu_principal()
 {
@@ -46,7 +48,6 @@ void menu_principal()
         }
     } while (strcmp(saisie, "T") != 0);
 }
-
 
 void choix_niveau(int *niveau)
 {
@@ -79,10 +80,8 @@ void lancer_partie(bool IA, int niveau)
     Joueur joueur2 = initialiser_joueur(2, IA);
     if (strcmp(saisie, "Q") == 0)
         return; // Si joueur 2 quitte
-
     lancer_tours(&joueur1, &joueur2, IA, niveau);
 }
-
 
 void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
 {
@@ -110,24 +109,24 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
             if (!rebelote)
                 printf("\n--- Tour de %s ---\n", joueur2->nom);
             if (IA)
-                if(niveau == 1)
+                if (niveau == 1)
                 {
                     touche = tirer_IA1(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
                 }
-                else if(niveau == 2)
+                else if (niveau == 2)
                 {
                     touche = tirer_IA2(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
                 }
-                else if(niveau == 3)
+                else if (niveau == 3)
                 {
                     touche = tirer_IA3(joueur2, joueur1, &cible); // Joueur 2 tire sur Joueur 1
                 }
-            else
-            {
-                touche = tirer(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
-                if (strcmp(saisie, "Q") == 0)
-                    return;
-            }
+                else
+                {
+                    touche = tirer(joueur2, joueur1); // Joueur 2 tire sur Joueur 1
+                    if (strcmp(saisie, "Q") == 0)
+                        return;
+                }
         }
 
         // Ajoute une fonction pour vérifier si un joueur a perdu
@@ -153,7 +152,6 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau)
         }
     }
 }
-
 
 bool tirer(Joueur *attaquant, Joueur *defenseur)
 {
@@ -191,10 +189,9 @@ bool tirer(Joueur *attaquant, Joueur *defenseur)
     }
 }
 
-
 bool tirer_IA1(Joueur *attaquant, Joueur *defenseur)
 {
-    sleep(2);
+    sleep(1);
     int y, x;
     do
     {
@@ -220,10 +217,9 @@ bool tirer_IA1(Joueur *attaquant, Joueur *defenseur)
     }
 }
 
-
 bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
 {
-    sleep(2);
+    sleep(1);
     int y, x;
     do
     {
@@ -267,7 +263,7 @@ bool update_navires_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
             }
             else if (defenseur->navires[i].orientation == 'O')
             {
-                navire_ok = verifier_etat_navire(defenseur, i, 1, -1);
+                navire_ok = verifier_etat_navire(defenseur, i, 0, -1);
             }
             else if (defenseur->navires[i].orientation == 'E')
             {
@@ -283,105 +279,204 @@ bool update_navires_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
                 actualiser_cible(cible, defenseur->navires[i]);
                 return true;
             }
-            else if (i == 4)
-                afficher_grilles(attaquant, defenseur);
         }
     }
+    afficher_grilles(attaquant, defenseur);
     return false;
 }
 
-void actualiser_cible(Cible *cible,Navire navire){
+void actualiser_cible(Cible *cible, Navire navire)
+{
     int incry, incrx;
-    incry= (navire.orientation=='N') ? -1 : 0;
-    incry= (navire.orientation=='S') ? 1 : 0;
-    incrx= (navire.orientation=='E') ? 1 : 0;
-    incrx= (navire.orientation=='O') ? -1 : 0;
-
-    for (int i = 0; i < navire.longueur; i++){
-        for (int j = 0; j < cible->nombre_touches; j++){
-            if (cible->touche_position[j][0]==navire.pos_y+incry && cible->touche_position[j][1]==navire.pos_x+incrx){
+    if (navire.orientation == 'N')
+    {
+        incrx = 0;
+        incry = -1;
+    }
+    else if (navire.orientation == 'S')
+    {
+        incrx = 0;
+        incry = 1;
+    }
+    else if (navire.orientation == 'O')
+    {
+        incry = 0;
+        incrx = -1;
+    }
+    else if (navire.orientation == 'E')
+    {
+        incry = 0;
+        incrx = 1;
+    }
+    for (int i = 0; i < navire.longueur; i++)
+    {
+        for (int j = 0; j < cible->nombre_touches; j++)
+        {
+            if (cible->touche_position[j][0] == navire.pos_y + incry * i && cible->touche_position[j][1] == navire.pos_x + incrx * i)
+            {
                 decaler_gauche(cible, j);
-                cible->nombre_touches-=1;
             }
         }
     }
-    if (cible->nombre_touches==0){
-        cible->etat=false;
+    if (cible->nombre_touches == 0)
+    {
+        cible->etat = false;
     };
-
 }
 
-void afficher_cible(Cible *cible){
-    printf("Cible : %d\n", cible->etat);
-    for (int j = 0; j <2; j++){
-        for (int i = 0; i <20;i++){
-            printf("%d ", cible->touche_position[i][j]);
-        }
-        printf("\n");
+void decaler_gauche(Cible *cible, int indice)
+{
+    for (int i = indice; i < cible->nombre_touches; i++)
+    {
+        cible->touche_position[i][0] = cible->touche_position[i + 1][0];
+        cible->touche_position[i][1] = cible->touche_position[i + 1][1];
     }
-    printf("Nombre de touches : %d\n", cible->nombre_touches);
+    cible->nombre_touches--;
 }
 
-
-void decaler_gauche(Cible *cible, int indice){
-
-    for (int i = indice; i < cible->nombre_touches; i++){
-        cible->touche_position[i][0]=cible->touche_position[i+1][0];
-        cible->touche_position[i][1]=cible->touche_position[i+1][1];
+void decaler_droite(Cible *cible, int y, int x)
+{
+    for (int i = cible->nombre_touches - 1; i >= 0; i--)
+    {
+        cible->touche_position[i + 1][0] = cible->touche_position[i][0];
+        cible->touche_position[i + 1][1] = cible->touche_position[i][1];
     }
+    cible->touche_position[0][0] = y;
+    cible->touche_position[0][1] = x;
 }
 
-void decaler_droite(Cible *cible, int y, int x){
-    for (int i = 0; i < cible->nombre_touches; i++){
-        cible->touche_position[i+1][0]=cible->touche_position[i][0];
-        cible->touche_position[i+1][1]=cible->touche_position[i][1];
+int definir_orientation(Cible cible)
+{
+    int compteur_vertical = 0;
+    int compteur_horizontal = 0;
+    for (int i = 0; i < cible.nombre_touches - 1; i++)
+    {
+        compteur_vertical += abs(cible.touche_position[i][0] - cible.touche_position[i + 1][0]);
+        compteur_horizontal += abs(cible.touche_position[i][1] - cible.touche_position[i + 1][1]);
     }
-    cible->touche_position[0][0]=y;
-    cible->touche_position[0][1]=x;
+    if (compteur_vertical >= compteur_horizontal)
+    {
+        return 0;
+    }
+    return 2;
 }
 
 bool tirer_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
 {
-    sleep(2);
     int y, x;
-    afficher_cible(cible);
-    if (cible->etat){
-        int orientation = 0;
-        int position=0;
-        do {
-            if (orientation==0){
-                y=cible->touche_position[position][0]-1;
-                x=cible->touche_position[position][1];
+    int orientation = definir_orientation(*cible);
+    sleep(1);
+    if (cible->etat)
+    {
+        int position = 0;
+        if (orientation == 0)
+        {
+            do
+            {
+                if (orientation == 0)
+                { // Nord
+                    y = cible->touche_position[position][0] - 1;
+                    x = cible->touche_position[position][1];
+                }
+                else if (orientation == 1)
+                { // Sud
+                    y = cible->touche_position[position][0] + 1;
+                    x = cible->touche_position[0][1];
+                }
+                orientation++;
+                if (orientation == 2)
+                {
+                    orientation = 0;
+                    position++;
+                }
+            } while (!verifier_tir_utile(x, y, attaquant->grille_tirs) && position <= cible->nombre_touches - 1);
+            if (position == cible->nombre_touches)
+            {
+                orientation = 2;
+                position = 0;
             }
-            else if (orientation==1){
-                y=cible->touche_position[position][0];
-                x=cible->touche_position[0][1]+1;
-            }
-            else if (orientation==2){
-                y=cible->touche_position[position][0]+1;
-                x=cible->touche_position[position][1];
-            }
-            else if (orientation==3){
-                y=cible->touche_position[position][0];
-                x=cible->touche_position[position][1]-1;
-            }
-            orientation++;
-            if (orientation==4){
-                orientation=0;
-                position++;
+            if (!verifier_tir_utile(x, y, attaquant->grille_tirs))
+            {
+                do
+                {
+                    if (orientation == 2)
+                    { // Ouest
+                        y = cible->touche_position[position][0];
+                        x = cible->touche_position[position][1] - 1;
+                    }
+                    else if (orientation == 3)
+                    { // Est
+                        y = cible->touche_position[position][0];
+                        x = cible->touche_position[position][1] + 1;
+                    }
+                    orientation++;
+                    if (orientation == 4)
+                    {
+                        orientation = 2;
+                        position++;
+                    }
+                } while (!verifier_tir_utile(x, y, attaquant->grille_tirs) && position <= cible->nombre_touches - 1);
             }
         }
-        while (!verifier_tir_utile(x, y, attaquant->grille_tirs));
-        
+        else
+        {
+            do
+            {
+                if (orientation == 2)
+                { // Ouest
+                    y = cible->touche_position[position][0];
+                    x = cible->touche_position[position][1] - 1;
+                }
+                else if (orientation == 3)
+                { // Est
+                    y = cible->touche_position[position][0];
+                    x = cible->touche_position[position][1] + 1;
+                }
+                orientation++;
+                if (orientation == 4)
+                {
+                    orientation = 2;
+                    position++;
+                }
+            } while (!verifier_tir_utile(x, y, attaquant->grille_tirs) && position <= cible->nombre_touches - 1);
+            if (position == cible->nombre_touches)
+            {
+                orientation = 2;
+                position = 0;
+            }
+            if (!verifier_tir_utile(x, y, attaquant->grille_tirs))
+            {
+                do
+                {
+                    if (orientation == 0)
+                    { // Nord
+                        y = cible->touche_position[position][0] - 1;
+                        x = cible->touche_position[position][1];
+                    }
+                    else if (orientation == 1)
+                    { // Sud
+                        y = cible->touche_position[position][0] + 1;
+                        x = cible->touche_position[0][1];
+                    }
+                    orientation++;
+                    if (orientation == 2)
+                    {
+                        orientation = 0;
+                        position++;
+                    }
+                } while (!verifier_tir_utile(x, y, attaquant->grille_tirs) && position <= cible->nombre_touches - 1);
+            }
+        }
         if (defenseur->grille[y][x] == 'N')
         {
             printf("\nDans le mille !\n");
             attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
             defenseur->grille[y][x] = 'X';      // Marque le navire touché
-            if (!update_navires_IA3(attaquant, defenseur,cible));
+            bool bateau_coule = update_navires_IA3(attaquant, defenseur, cible);
+            if (!bateau_coule)
             {
                 decaler_droite(cible, y, x);
-                cible->nombre_touches+=1;
+                cible->nombre_touches += 1;
             }
             return true;
         }
@@ -393,11 +488,13 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
             return false;
         }
     }
-    else{
+    else
+    {
         do
         {
             y = rand() % 10;
-            x = rand() % 10;
+            if (y%2==0) x = 2*(rand() % 5);
+            else x = 2*(rand() % 5) + 1;
         } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
 
         // Vérifie si le tir touche un navire
@@ -406,11 +503,11 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur, Cible *cible)
             printf("\nDans le mille !\n");
             attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
             defenseur->grille[y][x] = 'X';      // Marque le navire touché
-            update_navires(attaquant, defenseur);
-            cible->etat=true;
-            cible->nombre_touches=1;
-            cible->touche_position[0][0]=y;
-            cible->touche_position[0][1]=x;
+            update_navires_IA3(attaquant, defenseur, cible);
+            cible->etat = true;
+            cible->nombre_touches = 1;
+            cible->touche_position[0][0] = y;
+            cible->touche_position[0][1] = x;
             return true;
         }
         else

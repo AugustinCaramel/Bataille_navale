@@ -233,9 +233,13 @@ void initialiser_nom(char nom[30], bool IA, int indice){
 
 
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
+    if (x<0 || x>9 || y<0 || y>9){
+        return false;
+    }
     if (grille_tirs[y][x]=='.'){
         return true;
     }
+    return false;
 }
 
 
