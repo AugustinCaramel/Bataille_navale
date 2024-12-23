@@ -13,7 +13,6 @@ typedef struct
     char orientation; // N pour Nord, E pour Est, S pour Sud, O pour Ouest
 } Navire;
 
-Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], bool aleatoire, bool IA, int indice); 
-// Initialise les attributs, demande la position et l'orientation jusqu'à qu'elles soient valables, puis retourne le navire
+Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], bool aleatoire, int niveau, int indice); // Initialise les attributs, demande la position et l'orientation jusqu'à qu'elles soient valables, puis retourne le navire
 
 #endif // NAVIRE_H

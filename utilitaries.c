@@ -1,6 +1,6 @@
 #include "utilitaries.h"
 
-bool verifier_commande()
+bool verifier_commande() // Termine le programme si la variable globale saisie = T, renvoie false si saisie = Q, affiche les instructions si saisie = I, et renvoie true si saisie != Q et != T
 {
     if (strcmp(saisie, "Q") == 0)
     {
@@ -19,8 +19,7 @@ bool verifier_commande()
     return true; // Si aucune commande spéciale n'est saisie, le jeu continue
 }
 
-
-bool afficher_instructions()
+bool afficher_instructions() // Affiche les instructions
 {
     printf("\n---------------------------------\n");
     printf("       Instructions du jeu       \n");
@@ -47,31 +46,28 @@ bool afficher_instructions()
     return true; // Continuer le jeu si une autre commande est entrée
 }
 
-
-int verifier_format_coordonnees()
+int verifier_format_coordonnees() // Vérifie que les coordonnées saisies sont bien de la forme "x-y"
 {
     return strlen(saisie) == 3 && isdigit(saisie[0]) && saisie[1] == '-' && isdigit(saisie[2]);
 }
 
-
-void afficher_ligne_grille(char grille[10][10], int i)
+void afficher_ligne_grille(char grille[10][10], int i) // Affiche une ligne de la grille
 {
     for (int j = 0; j < 10; j++)
     {
         // Choix des couleurs selon le contenu de la case
         if (grille[i][j] == 'N')
-            printf(BLEU " N " RESET); // Navire
+            printf(" N "); // Navire
         else if (grille[i][j] == 'X')
-            printf(ROUGE " X " RESET); // Tir réussi
+            printf(" X "); // Tir réussi
         else if (grille[i][j] == 'O')
-            printf(VERT " O " RESET); // Tir manqué
+            printf(" O "); // Tir manqué
         else
             printf(" . "); // Case vide
     }
 }
 
-
-void afficher_grille(char grille[10][10])
+void afficher_grille(char grille[10][10]) // Affiche la grille
 {
     printf("\n  ");
     for (int i = 0; i < 10; i++)
@@ -88,8 +84,7 @@ void afficher_grille(char grille[10][10])
     }
 }
 
-
-void remplir_grille(char grille[10][10])
+void remplir_grille(char grille[10][10]) // Remplit la grille de points (initialisation)
 {
     for (int i = 0; i < 10; i++)
     {
@@ -100,64 +95,57 @@ void remplir_grille(char grille[10][10])
     }
 }
 
-
-bool verifier_position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10])
+bool verifier_position_valide(int pos_y, int pos_x, char orientation, int longueur, char grille[10][10]) // Vérifie que la position est valide lors du placement d'un navire (dans la grille et sans chevauchement)
 {
-    if (orientation == 'N' && pos_y >= longueur - 1 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9)
+    int dy = 0, dx = 0;
+    switch (orientation)
     {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y - j][pos_x] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else if (orientation == 'E' && pos_y >= 0 && pos_y <= 9 && pos_x >= 0 && pos_x <= 9 - longueur + 1)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y][pos_x + j] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else if (orientation == 'S' && pos_y >= 0 && pos_y <= 9 - longueur + 1 && pos_x >= 0 && pos_x <= 9)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y + j][pos_x] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else if (orientation == 'O' && pos_y >= 0 && pos_y <= 9 && pos_x >= longueur - 1 && pos_x <= 9)
-    {
-        for (int j = 0; j < longueur; j++)
-        {
-            if (grille[pos_y][pos_x - j] == 'N')
-                return false;
-        }
-        return true;
-    }
-    else
+    case 'N':
+        dy = -1;
+        break;
+    case 'E':
+        dx = 1;
+        break;
+    case 'S':
+        dy = 1;
+        break;
+    case 'O':
+        dx = -1;
+        break;
+    default:
         return false;
+    }
+
+    for (int j = 0; j < longueur; j++)
+    {
+        int ny = pos_y + j * dy;
+        int nx = pos_x + j * dx;
+        if (ny < 0 || ny > 9 || nx < 0 || nx > 9 || grille[ny][nx] == 'N')
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
-
-void affichage_placements(bool IA, int indice, char type[15], int longueur, char nom[30])
+void affichage_placements(int niveau, int indice, char type[15], int longueur, char nom[30]) // Affichage lors du placement des navires
 {
-    if (IA && indice == 1)
+    if (niveau != 0 && indice == 1)
     {
-        printf("\nPlacement du %s (%d cases).\n", type, longueur);
+        if (longueur == 5)
+            printf("\nPlacement du %s", type);
+        else
+            printf(", du %s", type);
+        if (longueur == 2)
+            printf(".\n");
     }
-    else if (!IA)
+    else if (niveau == 0)
     {
         printf("\nPlacement du %s (%d cases) pour %s.\n", type, longueur, nom);
     }
 }
 
-
-void demander_coordonnees(int *pos_x, int *pos_y)
+void demander_coordonnees(int *pos_x, int *pos_y) // Demande des coordonnées au joueur (initialisation et lors des tirs)
 {
     do
     {
@@ -169,8 +157,7 @@ void demander_coordonnees(int *pos_x, int *pos_y)
     sscanf(saisie, "%d-%d", pos_y, pos_x);
 }
 
-
-void demander_orientation(char *orientation)
+void demander_orientation(char *orientation) // Demande l'orientation au joueur (initialisation des navires)
 {
     do
     {
@@ -182,12 +169,11 @@ void demander_orientation(char *orientation)
     sscanf(saisie, "%c", orientation);
 }
 
-
-void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30])
+void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30]) // Affiche les noms des joueurs sous l'affichage des grilles
 {
     char nomA[50], nomB[50];   // Augmenter la taille pour tenir compte de la concaténation
     char tempA[50], tempB[50]; // Chaînes temporaires pour la concaténation
-    
+
     strcpy(nomA, (att_indice == 1) ? att_nom : def_nom);
     strcpy(nomB, (att_indice == 1) ? def_nom : att_nom);
 
@@ -213,15 +199,15 @@ void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30])
     printf("%*s%s\n", espacesAvantNomB, "", nomB);                          // Centrer le nomB
 }
 
-
-void initialiser_nom(char nom[30], bool IA, int indice){
-    if (!IA || indice == 1)
+void initialiser_nom(char nom[30], int niveau, int indice) // Demande le nom du joueur ou initialise le nom de l'IA : "l'ordinateur"
+{
+    if (niveau == 0 || indice == 1)
     {
         printf("Entrez votre nom : ");
         scanf("%s", saisie);
         if (!verifier_commande())
         {
-            return ;
+            return;
         }
         strcpy(nom, saisie);
     }
@@ -231,17 +217,50 @@ void initialiser_nom(char nom[30], bool IA, int indice){
     }
 }
 
-
-bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
-    if (grille_tirs[y][x]=='.'){
+bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]) // Vérifie si le tir est utile (case non encore touchée)
+{
+    if (x < 0 || x > 9 || y < 0 || y > 9)
+    {
+        return false;
+    }
+    if (grille_tirs[y][x] == '.')
+    {
         return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
-
-void afficher_type_partie(bool IA, int niveau){
-    if (IA)
-        printf("\nPartie contre l'ordinateur : niveau %d\n",niveau);
+void afficher_type_partie(int niveau) // Affiche le type de partie en cours (classique ou contre l'ordinateur)
+{
+    if (niveau != 0)
+        printf("\nPartie contre l'ordinateur : niveau %d\n", niveau);
     else
         printf("\nPartie classique : Joueur vs Joueur\n");
+}
+
+void decaler_gauche_chasse(int tableau[][2], int indice, int *taille) // Supprime une case du tableau de chasse à l'indice donné
+{
+    for (int i = indice; i < *taille - 1; i++)
+    {
+        tableau[i][0] = tableau[i + 1][0];
+        tableau[i][1] = tableau[i + 1][1];
+    }
+    *taille = *taille - 1;
+}
+
+void actualiser_chasse(int chasse[50][2], int *taille_chasse, int y, int x) // Actualise le tableau de chasse en retirant la case (y, x) si elle est présente
+{
+    int indice = 0;
+    while (indice < *taille_chasse && (chasse[indice][0] != y || chasse[indice][1] != x))
+    {
+        indice++;
+    }
+    if (indice < *taille_chasse)
+    {
+        printf("Case retiree ; %d-%d\n", chasse[indice][0], chasse[indice][1]);
+        decaler_gauche_chasse(chasse, indice, taille_chasse);
+    }
 }

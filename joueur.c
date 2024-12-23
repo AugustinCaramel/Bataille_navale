@@ -1,31 +1,49 @@
 #include "joueur.h"
 
-Joueur initialiser_joueur(int indice, bool IA)
+Joueur initialiser_joueur(int indice, int niveau) // Initialise les attributs du joueur : grilles, nom, placement des navires, indice (avec l'indice passé en paramètre)
 {
     Joueur joueur;
     remplir_grille(joueur.grille); // Pas besoin de pointeur car la grille est un tableau
     remplir_grille(joueur.grille_tirs);
     joueur.indice = indice;
 
-    if (IA && indice == 1)
+    if (niveau!=0 && indice == 1)
         printf("\n--- Initialisation du Joueur ---\n");
-    else if (!IA)
+    else if (niveau==0)
         printf("\n--- Initialisation du Joueur %d ---\n", indice);
 
-    initialiser_nom(joueur.nom, IA, indice);
+    initialiser_nom(joueur.nom, niveau, indice);
     if (strcmp(saisie, "Q") == 0)
         return joueur;
 
-    placer_navires(&joueur, IA); // Pointeur pour que les navires soient référencés dans les attributs du joueur
+    placer_navires(&joueur, niveau); // Pointeur pour que les navires soient référencés dans les attributs du joueur
     return joueur;
 }
 
-
-void placer_navires(Joueur *joueur, bool IA)
+Cible initialiser_cible() // Initialise les attributs de la cible : état, tableau des positions touchées (vide), orientations possibles, nombre de touches
 {
-    bool aleatoire = (IA && joueur->indice == 2) ? true : false;
+    Cible cible;
+    cible.etat = false;
+    for (int i = 0; i < 20; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            cible.touche_position[i][j] = -1;
+        }
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        cible.orientation[i] = false;
+    }
+    cible.nombre_touches = 0;
+    return cible;
+}
 
-    if (!(IA && joueur->indice == 2))
+void placer_navires(Joueur *joueur, int niveau) // Définit le mode aléatoire ou non, crée les 5 navires et les positionne sur la grille
+{
+    bool aleatoire = (niveau!=0 && joueur->indice == 2) ? true : false;
+
+    if (!(niveau!=0 && joueur->indice == 2))
     {
         do
         {
@@ -46,7 +64,7 @@ void placer_navires(Joueur *joueur, bool IA)
 
     for (int i = 0; i < 5; i++)
     {
-        joueur->navires[i] = creer_navire(i, joueur->nom, joueur->grille, aleatoire, IA, joueur->indice);
+        joueur->navires[i] = creer_navire(i, joueur->nom, joueur->grille, aleatoire, niveau, joueur->indice);
         if (strcmp(saisie, "Q") == 0)
             return; // Si l'utilisateur veut quitter
 
@@ -61,11 +79,10 @@ void placer_navires(Joueur *joueur, bool IA)
             else
                 joueur->grille[joueur->navires[i].pos_y][joueur->navires[i].pos_x - j] = 'N';
         }
-        if (!aleatoire || i == 4 && (!IA || IA && joueur->indice == 1)) // déterminé avec tableau de Karnaugh, c'était sympa
+        if (!aleatoire || i == 4 && (niveau==0 || niveau!=0 && joueur->indice == 1)) // déterminé avec tableau de Karnaugh !
             afficher_grille(joueur->grille);
     }
 }
-
 
 void afficher_grilles(Joueur *attaquant, Joueur *defenseur) // Affichage des grilles de tirs des deux joueurs côte-côte
 {
@@ -93,8 +110,7 @@ void afficher_grilles(Joueur *attaquant, Joueur *defenseur) // Affichage des gri
     afficher_noms_joueurs(attaquant->indice, attaquant->nom, defenseur->nom);
 }
 
-
-void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice)
+void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice) // Remplace les X par des N sur un navire, sur une grille de tirs, si le navire est coulé
 {
     for (int i = 0; i < attaquant->navires[indice].longueur; i++)
     {
@@ -109,8 +125,7 @@ void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice)
     }
 }
 
-
-bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX)
+bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX) // Renvoie false si le navire est entièrement touché
 {
     for (int j = 0; j < defenseur->navires[indice_navire].longueur; j++)
     {
@@ -122,8 +137,7 @@ bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int
     return false;
 }
 
-
-void update_navires(Joueur *attaquant, Joueur *defenseur)
+bool update_navires(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau) // Vérifie l'ensemble de la flotte du joueur, met à jour les grilles de tirs et annonce si un nouveau navire est coulé
 {
     for (int i = 0; i < 5; i++)
     {
@@ -154,16 +168,17 @@ void update_navires(Joueur *attaquant, Joueur *defenseur)
                 update_grille_tirs(defenseur, attaquant, i);
                 afficher_grilles(attaquant, defenseur);
                 printf("\nLe %s de %s a atteint le fond.\n", defenseur->navires[i].type, defenseur->nom);
-                return;
+                if (niveau == 3 || niveau == 2)
+                    actualiser_cible(cible, defenseur->navires[i]);
+                return true;
             }
-            else if (i == 4)
-                afficher_grilles(attaquant, defenseur);
         }
     }
+    afficher_grilles(attaquant, defenseur);
+    return false;
 }
 
-
-bool verifier_joueur_a_perdu(Joueur *joueur)
+bool verifier_joueur_a_perdu(Joueur *joueur) // Vérifie que le joueur a encore >=1 navire actif
 {
     for (int i = 0; i < 10; i++)
     {
@@ -174,4 +189,89 @@ bool verifier_joueur_a_perdu(Joueur *joueur)
         }
     }
     return true; // Tous les navires sont coulés
+}
+
+void actualiser_cible(Cible *cible, Navire navire) // Actualise la cible en retirant les positions touchées sur les navires coulés
+{
+    int incry, incrx;
+    if (navire.orientation == 'N')
+    {
+        incrx = 0;
+        incry = -1;
+    }
+    else if (navire.orientation == 'S')
+    {
+        incrx = 0;
+        incry = 1;
+    }
+    else if (navire.orientation == 'O')
+    {
+        incry = 0;
+        incrx = -1;
+    }
+    else if (navire.orientation == 'E')
+    {
+        incry = 0;
+        incrx = 1;
+    }
+    for (int i = 0; i < navire.longueur; i++)
+    {
+        for (int j = 0; j < cible->nombre_touches; j++)
+        {
+            if (cible->touche_position[j][0] == navire.pos_y + incry * i && cible->touche_position[j][1] == navire.pos_x + incrx * i)
+            {
+                decaler_gauche_cible(cible, j);
+            }
+        }
+    }
+    if (cible->nombre_touches == 0)
+    {
+        cible->etat = false;
+    }
+}
+
+int definir_orientation(Cible cible) // Définit l'orientation de la cible (Nord ou Ouest) sur la base des positions touchées
+{
+    int compteur_vertical = 0;
+    int compteur_horizontal = 0;
+    for (int i = 0; i < cible.nombre_touches - 1; i++)
+    {
+        compteur_vertical += abs(cible.touche_position[i][0] - cible.touche_position[i + 1][0]);
+        compteur_horizontal += abs(cible.touche_position[i][1] - cible.touche_position[i + 1][1]);
+    }
+    if (cible.nombre_touches > 1)
+    {
+        compteur_vertical += abs(cible.touche_position[cible.nombre_touches - 1][0] - cible.touche_position[0][0]);
+        compteur_horizontal += abs(cible.touche_position[cible.nombre_touches - 1][1] - cible.touche_position[0][1]);
+    }
+    if (compteur_vertical > compteur_horizontal)
+    {
+        return 0;
+    }
+    else if (compteur_horizontal > compteur_vertical)
+    {
+        return 2;
+    }
+    return 2 * (rand() % 2);
+}
+
+void decaler_droite_cible(Cible *cible, int y, int x) // Insère une nouvelle position touchée (y-x) en première position du tableau
+{
+    for (int i = cible->nombre_touches - 1; i >= 0; i--)
+    {
+        cible->touche_position[i + 1][0] = cible->touche_position[i][0];
+        cible->touche_position[i + 1][1] = cible->touche_position[i][1];
+    }
+    cible->touche_position[0][0] = y;
+    cible->touche_position[0][1] = x;
+}
+
+void decaler_gauche_cible(Cible *cible, int indice) // Supprime la position touchée à l'indice donné
+{
+    for (int i = indice; i < cible->nombre_touches; i++)
+    {
+        cible->touche_position[i][0] = cible->touche_position[i + 1][0];
+        cible->touche_position[i][1] = cible->touche_position[i + 1][1];
+    }
+    cible->nombre_touches--;
 }
