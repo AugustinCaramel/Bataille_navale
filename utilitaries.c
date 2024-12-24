@@ -246,17 +246,16 @@ bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]){
 
 bool trouver_tir_IA2(int *x, int *y, int *last_x, int *last_y, char grille_tirs[10][10]){
     bool trouver = false;
-    for (int ligne_y = 0; ligne_y <= 10; ligne_y++)
+    for (int ligne_y = 0; ligne_y <= *last_y; ligne_y++)
     {
         for (int colonne_x = 0; colonne_x <= 10; colonne_x++)
         {
-            if ((grille_tirs[ligne_y][colonne_x] == 'X') && (ligne_y  <= *last_y) && (colonne_x <= *last_y))
+            if ((grille_tirs[ligne_y][colonne_x] == 'X') && !((ligne_y >= *last_y) && (colonne_x >= *last_x)))
             {
                 *x = colonne_x;
                 *y = ligne_y;
                 trouver = true;
             }
-            printf(" %d %d %d %d /",ligne_y,colonne_x,*last_x,*last_y);
         }
         
     }
@@ -272,18 +271,18 @@ bool trouver_tir_IA2(int *x, int *y, int *last_x, int *last_y, char grille_tirs[
 
 
 void melanger_liste(int ordre_tir[4]){
-    int depart;
+    int depart,numero;
 
     depart = rand() % 4;
-    depart = depart+1;
 
     for (int i = 0; i < 4; i++)
     {
-        if (depart+i > 4)
+        if (depart+i > 3)
         {
             depart = depart-4;
         }
-        ordre_tir[depart+i] = i;
+        numero=depart+i;
+        ordre_tir[numero] = i;
     }
 }
 
@@ -291,7 +290,7 @@ void melanger_liste(int ordre_tir[4]){
 bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
     int direction_tir,y_tir,x_tir,ordre_tir[4] = {0,1,2,3};
     melanger_liste(ordre_tir);
-    for (int numero_tir = 1; numero_tir <= 4; numero_tir++)
+    for (int numero_tir = 0; numero_tir < 4; numero_tir++)
     {
         if (ordre_tir[numero_tir] == 0)     // N
         {
@@ -314,7 +313,7 @@ bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]){
             y_tir = *y;
         }
         
-        if(verifier_tir_utile(x_tir, y_tir, grille_tirs))
+        if(verifier_tir_utile(x_tir, y_tir, grille_tirs) && x_tir >=0 && y_tir >=0)
         {
             *x = x_tir;
             *y = y_tir;
