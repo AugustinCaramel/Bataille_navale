@@ -185,19 +185,12 @@ bool tirer_IA1(Joueur *attaquant, Joueur *defenseur)
     } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
 
     // Vérifie si le tir touche un navire
-    if (defenseur->grille[y][x] == 'N')
+    if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
     {
-        printf("\nDans le mille !\n");
-        attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
-        defenseur->grille[y][x] = 'X';      // Marque le navire touché
-        update_navires(attaquant, defenseur);
         return true;
     }
     else
     {
-        printf("\nDans l'eau...\n");
-        attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
-        afficher_grilles(attaquant, defenseur);
         return false;
     }
 }
@@ -238,24 +231,17 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
             }
             
         }
-               
+
     } while (retenter);
     
 
     // Vérifie si le tir touche un navire
-    if (defenseur->grille[y][x] == 'N')
+    if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
     {
-        printf("\nDans le mille !\n");
-        attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
-        defenseur->grille[y][x] = 'X';      // Marque le navire touché
-        update_navires(attaquant, defenseur);
         return true;
     }
     else
     {
-        printf("\nDans l'eau...\n");
-        attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
-        afficher_grilles(attaquant, defenseur);
         return false;
     }
 }
@@ -272,6 +258,19 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
     } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
 
     // Vérifie si le tir touche un navire
+    if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y)
+{
     if (defenseur->grille[y][x] == 'N')
     {
         printf("\nDans le mille !\n");
