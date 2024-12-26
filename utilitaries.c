@@ -291,31 +291,6 @@ void melanger_liste(int ordre_tir[4])
 }
 
 
-void trouver_coordonnee_tir_IA2(int ordre_tir[4],int numero_tir,int *x_tir,int *y_tir,int x,int y)
-{
-    if (ordre_tir[numero_tir] == 0)     // N
-    {
-        *x_tir = x;
-        *y_tir = y-1;
-    }
-    if (ordre_tir[numero_tir] == 1)     // E
-    {
-        *x_tir = x+1;
-        *y_tir = y;
-    }
-    if (ordre_tir[numero_tir] == 2)     // S
-    {
-        *x_tir = x;
-        *y_tir = y+1;
-    }
-    if (ordre_tir[numero_tir] == 3)     // W
-    {
-        *x_tir = x-1;
-        *y_tir = y;
-    }
-}
-
-
 void detecte_direction_navire(char grille_tirs[10][10],int x_tir,int y_tir,int *direction)
 {
     int yplus=y_tir+1, ymoins=y_tir-1, xplus=x_tir+1, xmoins=x_tir-1;
@@ -336,7 +311,7 @@ void detecte_direction_navire(char grille_tirs[10][10],int x_tir,int y_tir,int *
 }
 
 
-void trouver_coordonnee_tir_IA3(int ordre_tir[4],int numero_tir,int direction,int *x_tir,int *y_tir,int x,int y)
+void trouver_coordonnee_tir_IA(int ordre_tir[4],int numero_tir,int direction,int *x_tir,int *y_tir,int x,int y)
 {
     if (ordre_tir[numero_tir] == 0 && direction !=1)     // N
     {
@@ -372,7 +347,7 @@ bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10])
     melanger_liste(ordre_tir);
     for (int numero_tir = 0; numero_tir < 4; numero_tir++)
     {
-        trouver_coordonnee_tir_IA2(ordre_tir,numero_tir,&x_tir,&y_tir,*x,*y);
+        trouver_coordonnee_tir_IA(ordre_tir,numero_tir,0,&x_tir,&y_tir,*x,*y);
         printf("/ %d %d /",x_tir,y_tir);
         if(verifier_tir_utile(x_tir, y_tir, grille_tirs) && x_tir >=0 && x_tir < 10 && y_tir >=0 && y_tir < 10)
         {
@@ -394,7 +369,7 @@ bool selectionner_tir_IA3(int *x, int *y, char grille_tirs[10][10])
     detecte_direction_navire(grille_tirs,*x,*y,&direction_tir);
     for (int numero_tir = 0; numero_tir < 4; numero_tir++)
     {
-        trouver_coordonnee_tir_IA3(ordre_tir,numero_tir,direction_tir,&x_tir,&y_tir,*x,*y);
+        trouver_coordonnee_tir_IA(ordre_tir,numero_tir,direction_tir,&x_tir,&y_tir,*x,*y);
         printf("coordonne tir:%d %d /",x_tir,y_tir);
         printf("num tir:%d /",numero_tir);
         if(verifier_tir_utile(x_tir, y_tir, grille_tirs) && x_tir >=0 && x_tir < 10 && y_tir >=0 && y_tir < 10)
