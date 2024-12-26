@@ -311,6 +311,41 @@ void detecte_direction_navire(char grille_tirs[10][10],int x_tir,int y_tir,int *
 }
 
 
+bool navire_imcomplet_sur_direction(char grille_tirs[10][10],int x,int y,int direction)
+{
+    int x1 = x,y1 = y;
+    if (direction == 1)
+    {
+        for (;(grille_tirs[y][x1] == 'X') && (x1 < 10);x1++){}
+        if (grille_tirs[y][x1] == '.')
+        {
+            return false;
+        }
+        x1 = x;
+        for (;(grille_tirs[y][x1] == 'X') && (x1 > 0);x1--){}
+        if (grille_tirs[y][x1] == '.')
+        {
+            return false;
+        }
+    }
+    else if (direction == 2)
+    {
+        for (;(grille_tirs[y1][x] == 'X') && (y1 < 10);y1++){}
+        if (grille_tirs[y][x] == '.')
+        {
+            return false;
+        }
+        y1 = y;
+        for (;(grille_tirs[y1][x] == 'X') && (y1 > 0);y1--){}
+        if (grille_tirs[y1][x] == '.')
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 void trouver_coordonnee_tir_IA(int ordre_tir[4],int numero_tir,int direction,int *x_tir,int *y_tir,int x,int y)
 {
     if (ordre_tir[numero_tir] == 0 && direction !=1)     // N
@@ -341,7 +376,7 @@ void trouver_coordonnee_tir_IA(int ordre_tir[4],int numero_tir,int direction,int
 }
 
 
-bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10])
+bool selectionner_tir_IA2(int *x, int *y,char grille_tirs[10][10])
 {
     int y_tir,x_tir,ordre_tir[4] = {0,1,2,3};
     melanger_liste(ordre_tir);
@@ -378,6 +413,25 @@ bool selectionner_tir_IA3(int *x, int *y, char grille_tirs[10][10])
             *y = y_tir;
             printf("grille tire:%C ",grille_tirs[y_tir][x_tir]);
             return true;
+        }
+    }
+    if (direction_tir != 0)
+    {
+        if (navire_imcomplet_sur_direction(grille_tirs,*x,*y,direction_tir))
+        {
+           for (int numero_tir = 0; numero_tir < 4; numero_tir++)
+            {
+                trouver_coordonnee_tir_IA(ordre_tir,numero_tir,0,&x_tir,&y_tir,*x,*y);
+                printf("coordonne tir:%d %d /",x_tir,y_tir);
+                printf("num tir:%d /",numero_tir);
+                if(verifier_tir_utile(x_tir, y_tir, grille_tirs) && x_tir >=0 && x_tir < 10 && y_tir >=0 && y_tir < 10)
+                {
+                    *x = x_tir;
+                    *y = y_tir;
+                    printf("grille tire:%C ",grille_tirs[y_tir][x_tir]);
+                    return true;
+                }
+            } 
         }
     }
     printf("error");
