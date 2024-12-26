@@ -156,10 +156,9 @@ void update_navires(Joueur *attaquant, Joueur *defenseur)
                 printf("\nLe %s de %s a atteint le fond.\n", defenseur->navires[i].type, defenseur->nom);
                 return;
             }
-            else if (i == 4)
-                afficher_grilles(attaquant, defenseur);
         }
     }
+    afficher_grilles(attaquant, defenseur);
 }
 
 

@@ -319,7 +319,7 @@ void trouver_coordonnee_tir_IA2(int ordre_tir[4],int numero_tir,int *x_tir,int *
 void detecte_direction_navire(char grille_tirs[10][10],int x_tir,int y_tir,int *direction)
 {
     int yplus=y_tir+1, ymoins=y_tir-1, xplus=x_tir+1, xmoins=x_tir-1;
-    printf(" %d %d %d %d %d %d /",y_tir,yplus,ymoins,x_tir,xplus,xmoins);
+    printf("coordonne direction:%d %d %d %d %d %d /",y_tir,yplus,ymoins,x_tir,xplus,xmoins);
     if ((grille_tirs[y_tir][xmoins]=='X'||grille_tirs[y_tir][xplus]=='X') && xmoins>=0 && xplus<10)
     {
         *direction = 1; // E ou W
@@ -332,7 +332,7 @@ void detecte_direction_navire(char grille_tirs[10][10],int x_tir,int y_tir,int *
     {
         *direction = 0; // toute direction
     }
-    printf(" %d /",*direction);
+    printf("direction:%d /",*direction);
 }
 
 
@@ -343,20 +343,25 @@ void trouver_coordonnee_tir_IA3(int ordre_tir[4],int numero_tir,int direction,in
         *x_tir = x;
         *y_tir = y-1;
     }
-    if (ordre_tir[numero_tir] == 1 && direction !=2)     // E
+    else if (ordre_tir[numero_tir] == 1 && direction !=2)     // E
     {
         *x_tir = x+1;
         *y_tir = y;
     }
-    if (ordre_tir[numero_tir] == 2 && direction !=1)     // S
+    else if (ordre_tir[numero_tir] == 2 && direction !=1)     // S
     {
         *x_tir = x;
         *y_tir = y+1;
     }
-    if (ordre_tir[numero_tir] == 3 && direction !=2)     // W
+    else if (ordre_tir[numero_tir] == 3 && direction !=2)     // W
     {
         *x_tir = x-1;
         *y_tir = y;
+    }
+    else
+    {
+        *x_tir = 11;
+        *y_tir = 11;
     }
 }
 
@@ -390,6 +395,8 @@ bool selectionner_tir_IA3(int *x, int *y, char grille_tirs[10][10])
     for (int numero_tir = 0; numero_tir < 4; numero_tir++)
     {
         trouver_coordonnee_tir_IA3(ordre_tir,numero_tir,direction_tir,&x_tir,&y_tir,*x,*y);
+        printf("coordonne tir:%d %d /",x_tir,y_tir);
+        printf("num tir:%d /",numero_tir);
         if(verifier_tir_utile(x_tir, y_tir, grille_tirs) && x_tir >=0 && x_tir < 10 && y_tir >=0 && y_tir < 10)
         {
             *x = x_tir;
