@@ -244,7 +244,7 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
         {
             if (retenter == false)
             {
-                mode_reperage(attaquant,&x,&y);
+                mode_reperage_IA3(attaquant,defenseur,&x,&y);
             }
             
         }
@@ -303,6 +303,29 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
         *y = rand() % 10;
         *x = rand() % 10;
     } while (!verifier_tir_utile(*x, *y, attaquant->grille_tirs)); 
+}
+
+
+void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
+{   
+    bool flotte_intacte = true;
+    for (int indice = 0; indice < 5; indice++)
+    {
+        if (defenseur->navires[indice].etat == false)
+        {
+            //flotte_intacte = false;
+            break;
+        } 
+    }
+    if (flotte_intacte == true)
+    {
+    do
+    {
+        *y = rand() % 10;
+        *x = rand() % 10;
+        printf("tire %d %d %d %d/ ",*y,*x,(*x % 2),(*y % 2));
+    } while ((!verifier_tir_utile(*x, *y, attaquant->grille_tirs)) || !(((*x % 2) == 0 && (*y % 2) != 0) || ((*x % 2) == 1 && (*y % 2) != 1))); 
+    }
 }
 
 
