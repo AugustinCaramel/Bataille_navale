@@ -1,5 +1,17 @@
 #include "game.h"
 
+zone initialiser_zone(char nom[30],int x,int y,int x1,int y1)
+{
+    zone zone;
+    strcpy(zone.nom, nom);
+    zone.x = x;
+    zone.y = y;
+    zone.x1 = x1;
+    zone.y1 = y1;
+    return zone;
+}
+
+
 void menu_principal()
 {
     do
@@ -309,6 +321,19 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
 void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
 {   
     bool flotte_intacte = true;
+
+    zone zone[8];
+    zone[0]=initialiser_zone("haut_gauche",1,1,4,4);
+    zone[1]=initialiser_zone("haut_droit",5,1,8,4);
+    zone[2]=initialiser_zone("bas_gauche",1,5,4,8);
+    zone[3]=initialiser_zone("bas_droit",5,5,8,8);
+    zone[4]=initialiser_zone("bord_gauche",0,1,0,8);
+    zone[5]=initialiser_zone("bord_gauche",9,1,9,8);
+    zone[6]=initialiser_zone("bord_bas",1,9,8,9);
+    zone[7]=initialiser_zone("bord_haut",1,0,8,0);
+
+    printf("choix: %d / ",choix_zone(zone,attaquant->grille_tirs));
+
     for (int indice = 0; indice < 5; indice++)
     {
         if (defenseur->navires[indice].etat == false)
@@ -346,4 +371,37 @@ bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y
         afficher_grilles(attaquant, defenseur);
         return false;
     }
+}
+
+
+int choix_zone(zone zone[8],char grille_tirs[10][10])
+{
+    int meilleur_zone;
+    float stat,stat_meilleur_zone,nbr_ratee,nbr_cases = 1;
+    for (int i = 0; i < 8; i++)
+    {
+        nbr_cases = 0;
+        nbr_ratee = 0;
+        for (int colone = zone[i].y; colone <= zone[i].y1; colone++)
+        {
+            for (int ligne = zone[i].x; ligne <= zone[i].x1; ligne++)
+            {
+                if (grille_tirs[colone][ligne]=='O')
+                {
+                    nbr_ratee = nbr_ratee + 1;
+                }
+                nbr_cases = nbr_cases + 1;
+                
+            }
+        }
+        stat = nbr_ratee/nbr_cases;
+        printf("stat: %f/ ",stat);
+        if (stat < stat_meilleur_zone)
+        {
+            stat_meilleur_zone = stat;
+            meilleur_zone = i;
+        }
+    }
+    return meilleur_zone;
+    
 }
