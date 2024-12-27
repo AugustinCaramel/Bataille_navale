@@ -320,6 +320,7 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
 
 void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
 {   
+    int zone_choisi,ecart_x,ecart_y;
     bool flotte_intacte = true;
 
     zone zone[8];
@@ -328,11 +329,10 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
     zone[2]=initialiser_zone("bas_gauche",1,5,4,8);
     zone[3]=initialiser_zone("bas_droit",5,5,8,8);
     zone[4]=initialiser_zone("bord_gauche",0,1,0,8);
-    zone[5]=initialiser_zone("bord_gauche",9,1,9,8);
+    zone[5]=initialiser_zone("bord_droit",9,1,9,8);
     zone[6]=initialiser_zone("bord_bas",1,9,8,9);
     zone[7]=initialiser_zone("bord_haut",1,0,8,0);
 
-    printf("choix: %d / ",choix_zone(zone,attaquant->grille_tirs));
 
     for (int indice = 0; indice < 5; indice++)
     {
@@ -342,14 +342,24 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
             break;
         } 
     }
+
+    zone_choisi = choix_zone(zone,attaquant->grille_tirs);
+    printf("zone choisis:%d/ ",zone_choisi);
+    ecart_x = zone[zone_choisi].x1 - zone[zone_choisi].x + 1;
+    ecart_y = zone[zone_choisi].y1 - zone[zone_choisi].y + 1;
+
     if (flotte_intacte == true)
     {
     do
     {
-        *y = rand() % 10;
-        *x = rand() % 10;
+        *y = rand() % ecart_y + zone[zone_choisi].y;
+        *x = rand() % ecart_x + zone[zone_choisi].x;
         printf("tire %d %d %d %d/ ",*y,*x,(*x % 2),(*y % 2));
-    } while ((!verifier_tir_utile(*x, *y, attaquant->grille_tirs)) || !(((*x % 2) == 0 && (*y % 2) != 0) || ((*x % 2) == 1 && (*y % 2) != 1))); 
+    } while ((!verifier_tir_utile(*x, *y, attaquant->grille_tirs)) 
+                || !(((*x % 2) == 0 && (*y % 2) != 0) 
+                || ((*x % 2) == 1 && (*y % 2) != 1)) 
+                || (*x == 0 && *y == 9) 
+                || (*x == 9 && *y == 0)); 
     }
 }
 
@@ -377,7 +387,7 @@ bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y
 int choix_zone(zone zone[8],char grille_tirs[10][10])
 {
     int meilleur_zone;
-    float stat,stat_meilleur_zone,nbr_ratee,nbr_cases = 1;
+    float stat,stat_meilleur_zone = 0,nbr_ratee,nbr_cases;
     for (int i = 0; i < 8; i++)
     {
         nbr_cases = 0;
@@ -386,7 +396,7 @@ int choix_zone(zone zone[8],char grille_tirs[10][10])
         {
             for (int ligne = zone[i].x; ligne <= zone[i].x1; ligne++)
             {
-                if (grille_tirs[colone][ligne]=='O')
+                if (grille_tirs[colone][ligne]=='.')
                 {
                     nbr_ratee = nbr_ratee + 1;
                 }
@@ -396,7 +406,7 @@ int choix_zone(zone zone[8],char grille_tirs[10][10])
         }
         stat = nbr_ratee/nbr_cases;
         printf("stat: %f/ ",stat);
-        if (stat < stat_meilleur_zone)
+        if (stat > stat_meilleur_zone)
         {
             stat_meilleur_zone = stat;
             meilleur_zone = i;
