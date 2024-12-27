@@ -17,7 +17,11 @@ void choix_niveau(int *niveau); // Affiche les différents niveaux et modifie la
 void lancer_partie(bool IA, int niveau); // Initialise les deux joueurs et lance les tours
 void lancer_tours(Joueur *joueur1, Joueur *joueur2, bool IA, int niveau);
 bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y);
-int choix_zone(zone zone[8],char grille_tirs[10][10]);
+void update_compteur(Navire navires,zone zone,char grille_tirs[10][10],int colone,int ligne,int *compteur,int *nombre_navire);
+void remplis_estime_navires(Navire navires,int flotte_estime[4],int nombre_navire);
+void estime_zone(Navire navires,zone zone,char grille_tirs[10][10],int flotte_estime[4],bool ligne_premier);
+void estime_flotte_par_zone(Navire navires[5],zone zone,char grille_tirs[10][10],int flotte_estime_x[4],int flotte_estime_y[4]);
+int choix_zone(Navire navires[5],zone zone[8],char grille_tirs[10][10]);
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);
