@@ -29,6 +29,8 @@ void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int na
 void controle_zone_disponible(zone zone[8],char grille_tirs[10][10]);
 int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4],zone zone[8],char grille_tirs[10][10]);
 int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]);
+bool verifier_taille_compatible(char grille_tirs[10][10],char direction,int taille,int x,int y);
+void choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y);
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);

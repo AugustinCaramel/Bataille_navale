@@ -323,8 +323,7 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
 
 void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
 {   
-    int zone_choisi,ecart_x,ecart_y;
-    bool flotte_intacte = true;
+    int zone_choisi,ecart_x,ecart_y,x1,y1;
 
     zone zone[8];
     zone[0]=initialiser_zone("haut_gauche",1,1,4,4);
@@ -350,8 +349,7 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
     ecart_x = zone[zone_choisi].x1 - zone[zone_choisi].x + 1;
     ecart_y = zone[zone_choisi].y1 - zone[zone_choisi].y + 1;
 
-    if (flotte_intacte == true)
-    {
+    choix_tire_reperage_IA3(zone[zone_choisi],attaquant->grille_tirs,&x1,&y1);
     do
     {
         *y = rand() % ecart_y + zone[zone_choisi].y;
@@ -360,7 +358,6 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
     } while ((!verifier_tir_utile(*x, *y, attaquant->grille_tirs)) 
                 || !(((*x % 2) == 0 && (*y % 2) != 0) 
                 || ((*x % 2) == 1 && (*y % 2) != 1)) ); 
-    }
 }
 
 
@@ -384,6 +381,78 @@ bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y
 }
 
 
+void choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y)
+{
+    int taille,ecart_x,ecart_y;
+    char direction;
+
+    if (zone.taille_cible[0] >= zone.taille_cible[1])
+    {
+        taille = zone.taille_cible[0];
+        direction = 'X';
+    }
+    else if (zone.taille_cible[0] < zone.taille_cible[1])
+    {
+        taille = zone.taille_cible[1];
+        direction = 'Y';
+    }
+
+    ecart_x = zone.x1 - zone.x;
+    ecart_y = zone.y1 - zone.y;
+
+    do
+    {
+        *x = rand() % ecart_x + zone.x;
+        *y = rand() % ecart_x + zone.y;
+    } while (verifier_taille_compatible(grille_tirs,direction,taille,*x,*y) == false);    
+
+    printf("xy:%d %d/ ",*x,*y);
+}
+
+
+bool verifier_taille_compatible(char grille_tirs[10][10],char direction,int taille,int x,int y)
+{
+    int comptage = 0;
+
+    if ((x % 2 == 0 && y % 2 == 0) || (x % 2 != 0 && y % 2 != 0))
+    {
+        return false;
+    }
+
+    if (direction == 'X')
+    {
+        for (int i = x;grille_tirs[y][i] == '.'; i++)
+        {
+            comptage = comptage + 1;
+        }
+        for (int i = x;grille_tirs[y][(i-1)] == '.'; i--)
+        {
+            comptage = comptage + 1;
+        } 
+    }
+    else if (direction == 'Y')
+    {
+        for (int i = x;grille_tirs[i][x] == '.'; i++)
+        {
+            comptage = comptage + 1;
+        }
+        for (int i = x;grille_tirs[(i-1)][x] == '.'; i--)
+        {
+            comptage = comptage + 1;
+        } 
+    }
+
+    if (comptage >= taille)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
 int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10])
 {
     int meilleur_zone,flotte_estime_x[8][4],flotte_estime_y[8][4];
@@ -391,8 +460,8 @@ int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]
     for (int num_zone = 0; num_zone < 8; num_zone++)
     {
         estime_flotte_par_zone(navires,zone[num_zone],grille_tirs,flotte_estime_x[num_zone],flotte_estime_y[num_zone]);
-        zone->taille_cible[0] = estime_taile_navire_cible(flotte_estime_x[num_zone]);
-        zone->taille_cible[1] = estime_taile_navire_cible(flotte_estime_y[num_zone]);
+        zone[num_zone].taille_cible[0] = estime_taile_navire_cible(flotte_estime_x[num_zone]);
+        zone[num_zone].taille_cible[1] = estime_taile_navire_cible(flotte_estime_y[num_zone]);
 
         printf("zone %d/ ",num_zone);
         printf("estimex:%d %d %d %d /",flotte_estime_x[num_zone][0],flotte_estime_x[num_zone][1],flotte_estime_x[num_zone][2],flotte_estime_x[num_zone][3]);
@@ -402,6 +471,7 @@ int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]
     }
     meilleur_zone=choix_zone_favorable(flotte_estime_x,flotte_estime_y,zone,grille_tirs);
     printf("zone choisis:%d/ ",meilleur_zone);
+    printf("taille cible:%d %d/ ",zone[meilleur_zone].taille_cible[0],zone[meilleur_zone].taille_cible[1]);
     return meilleur_zone;
 }
     
