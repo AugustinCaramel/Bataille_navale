@@ -415,59 +415,12 @@ int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4])
         nbr_navire_y = 0;
         for (int num_zone = 0;num_zone < 8;num_zone++)
         {
-            if(flotte_estime_x[num_zone][navire] == nbr_navire_x && restrain_x[num_zone] == true)
-            {
-                nbr_navire_x = flotte_estime_x[num_zone][navire];
-                zone_choisi_x = num_zone;
-
-            }
-            else if (flotte_estime_x[num_zone][navire] < nbr_navire_x && restrain_x[num_zone] == true)
-            {
-                restrain_x[num_zone] = false;
-                nbr_restrain_x = nbr_restrain_x + 1;
-            }
-            else if (flotte_estime_x[num_zone][navire] > nbr_navire_x && restrain_x[num_zone] == true)
-            {
-                nbr_navire_x = flotte_estime_x[num_zone][navire];
-                zone_choisi_x = num_zone;
-                for (int posterieur = num_zone-1; posterieur >= 0; posterieur--)
-                {
-                    if(restrain_x[posterieur] == true)
-                    {
-                        restrain_x[posterieur] = false;
-                        nbr_restrain_x = nbr_restrain_x + 1;
-                    }
-                }   
-            }
-
-            if(flotte_estime_y[num_zone][navire] == nbr_navire_y && restrain_y[num_zone] == true)
-            {
-                nbr_navire_y = flotte_estime_y[num_zone][navire];
-                zone_choisi_y = num_zone;
-
-            }
-            else if (flotte_estime_y[num_zone][navire] < nbr_navire_y && restrain_y[num_zone] == true)
-            {
-                restrain_y[num_zone] = false;
-                nbr_restrain_y = nbr_restrain_y + 1;
-            }
-            else if (flotte_estime_y[num_zone][navire] > nbr_navire_y && restrain_y[num_zone] == true)
-            {
-                nbr_navire_y = flotte_estime_y[num_zone][navire];
-                zone_choisi_y = num_zone;
-                for (int posterieur = num_zone-1; posterieur >= 0; posterieur--)
-                {
-                    if(restrain_y[posterieur] == true)
-                    {
-                        restrain_y[posterieur] = false;
-                        nbr_restrain_y = nbr_restrain_y + 1;
-                    }
-                }   
-            }
-            //printf("restrain:%d %d %d %d %d %d %d/ ",navire,restrain_x,restrain_y,zone_choisi_x,zone_choisi_y,nbr_navire_x,nbr_navire_y);
+            restrain_choix(flotte_estime_x,restrain_x,num_zone,navire,&nbr_navire_x,&zone_choisi_x,&nbr_restrain_x);
+            restrain_choix(flotte_estime_y,restrain_y,num_zone,navire,&nbr_navire_y,&zone_choisi_y,&nbr_restrain_y);
         }
+        //printf("restrain:%d %d %d %d %d/ ",navire,zone_choisi_x,zone_choisi_y,nbr_restrain_x,nbr_restrain_y);
     }
-    printf("choix xy:%d %d/ ",zone_choisi_x,zone_choisi_y);
+    //printf("choix xy:%d %d/ ",zone_choisi_x,zone_choisi_y);
     for (int num_navire = 0; num_navire < 4; num_navire++)
     {
         if (flotte_estime_x[zone_choisi_x][num_navire] > flotte_estime_y[zone_choisi_y][num_navire])
@@ -484,6 +437,37 @@ int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4])
         }
     }
 }
+
+
+void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int navire,int *nbr_navire,int *zone_choisi,int *nbr_restrain)
+{
+    if(flotte_estime[num_zone][navire] == *nbr_navire && restrain[num_zone] == true)
+    {
+        *nbr_navire = flotte_estime[num_zone][navire];
+        *zone_choisi = num_zone;
+
+    }
+    else if (flotte_estime[num_zone][navire] < *nbr_navire && restrain[num_zone] == true)
+    {
+        restrain[num_zone] = false;
+        *nbr_restrain = *nbr_restrain + 1;
+    }
+    else if (flotte_estime[num_zone][navire] > *nbr_navire && restrain[num_zone] == true)
+    {
+        *nbr_navire = flotte_estime[num_zone][navire];
+        *zone_choisi = num_zone;
+        for (int posterieur = num_zone-1; posterieur >= 0; posterieur--)
+        {
+            if(restrain[posterieur] == true)
+            {
+                restrain[posterieur] = false;
+                *nbr_restrain = *nbr_restrain + 1;
+            }
+        } 
+    }
+
+}
+
 
 void estime_flotte_par_zone(Navire navires[5],zone zone,char grille_tirs[10][10],int flotte_estime_x[4],int flotte_estime_y[4])
 {
