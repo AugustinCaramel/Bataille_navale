@@ -10,6 +10,7 @@ zone initialiser_zone(char nom[30],int x,int y,int x1,int y1)
     zone.y1 = y1;
     zone.taille_cible[0] = 0;
     zone.taille_cible[1] = 1;
+    zone.tir_libre = true;
     return zone;
 }
 
@@ -399,16 +400,30 @@ int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]
         printf("taille cible:%d %d/ ",zone->taille_cible[0],zone->taille_cible[1]);
         printf("\n");
     }
-    meilleur_zone=choix_zone_favorable(flotte_estime_x,flotte_estime_y);
+    meilleur_zone=choix_zone_favorable(flotte_estime_x,flotte_estime_y,zone,grille_tirs);
     printf("zone choisis:%d/ ",meilleur_zone);
     return meilleur_zone;
 }
     
 
-int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4])
+int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4],zone zone[8],char grille_tirs[10][10])
 {
     bool restrain_x[8] = {true,true,true,true,true,true,true,true},restrain_y[8] = {true,true,true,true,true,true,true,true};
     int nbr_restrain_x = 0,nbr_restrain_y = 0,zone_choisi_x = 0,zone_choisi_y = 0,nbr_navire_x,nbr_navire_y;
+
+    controle_zone_disponible(zone,grille_tirs);
+    for (int num_zone = 0;num_zone < 8;num_zone++)
+    {
+        if (zone[num_zone].tir_libre == false)
+        {
+            restrain_x[num_zone] = false;
+            nbr_restrain_x = nbr_restrain_x + 1;
+            restrain_y[num_zone] = false;
+            nbr_restrain_y = nbr_restrain_y + 1;
+            printf("exclu %d/ ",num_zone);
+        }
+    }
+
     for (int navire = 0;navire < 4;navire++)
     {
         nbr_navire_x = 0;
@@ -418,9 +433,7 @@ int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4])
             restrain_choix(flotte_estime_x,restrain_x,num_zone,navire,&nbr_navire_x,&zone_choisi_x,&nbr_restrain_x);
             restrain_choix(flotte_estime_y,restrain_y,num_zone,navire,&nbr_navire_y,&zone_choisi_y,&nbr_restrain_y);
         }
-        //printf("restrain:%d %d %d %d %d/ ",navire,zone_choisi_x,zone_choisi_y,nbr_restrain_x,nbr_restrain_y);
     }
-    //printf("choix xy:%d %d/ ",zone_choisi_x,zone_choisi_y);
     for (int num_navire = 0; num_navire < 4; num_navire++)
     {
         if (flotte_estime_x[zone_choisi_x][num_navire] > flotte_estime_y[zone_choisi_y][num_navire])
@@ -436,6 +449,41 @@ int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4])
             return zone_choisi_x;
         }
     }
+}
+
+
+void controle_zone_disponible(zone zone[8],char grille_tirs[10][10])
+{
+    bool trouve;
+    for (int num_zone = 0; num_zone < 8; num_zone++)
+    {
+        trouve = false;
+        if(zone[num_zone].tir_libre == true)
+        {
+            for (int ligne = zone[num_zone].x; ligne <= zone[num_zone].x1; ligne++)
+            {
+                for(int colone = zone[num_zone].y; colone <= zone[num_zone].y1; colone++)
+                {
+                    if ((grille_tirs[colone][ligne] == '.') && ((ligne % 2 == 0 && colone % 2 != 0) || (ligne % 2 != 0 && colone % 2 == 0)))
+                    {
+                        trouve = true;
+                        break;
+                    }                    
+                }
+                if (trouve == true)
+                {
+                    break;
+                }
+            }
+            if (trouve == false)
+            {
+                printf("pastrouve:%d %d %d %d %d/ ",num_zone,zone[num_zone].x,zone[num_zone].x1,zone[num_zone].y,zone[num_zone].y1);
+                zone[num_zone].tir_libre = false;
+            }
+            
+        }
+    }
+    
 }
 
 
@@ -480,7 +528,7 @@ void estime_flotte_par_zone(Navire navires[5],zone zone,char grille_tirs[10][10]
 
     for (int num_navire = 0; num_navire < 5; num_navire++)
     {
-        if((navires[num_navire].etat == true) && !(num_navire == 3 && navires[3].etat == true && navires[3].etat == true))
+        if((navires[num_navire].etat == true) && !(num_navire == 3 && navires[3].etat == true && navires[4].etat == true))
         {
             estime_zone(navires[num_navire],zone,grille_tirs,flotte_estime_y,true);
             estime_zone(navires[num_navire],zone,grille_tirs,flotte_estime_x,false);

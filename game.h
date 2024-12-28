@@ -7,6 +7,7 @@ extern char saisie[3]; // Variable globale pour les saisies
 
 typedef struct
 {
+    bool tir_libre;
     char nom[20];    // nom zone
     int x,y,x1,y1,taille_cible[2]; // taille cible sur x et y
 } zone;
@@ -25,7 +26,8 @@ void estime_zone(Navire navires,zone zone,char grille_tirs[10][10],int flotte_es
 void estime_flotte_par_zone(Navire navires[5],zone zone,char grille_tirs[10][10],int flotte_estime_x[4],int flotte_estime_y[4]);
 int estime_taile_navire_cible(int flotte_estime[4]);
 void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int navire,int *nbr_navire,int *zone_choisi,int *nbr_restrain);
-int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4]);
+void controle_zone_disponible(zone zone[8],char grille_tirs[10][10]);
+int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4],zone zone[8],char grille_tirs[10][10]);
 int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]);
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
