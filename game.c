@@ -2,6 +2,7 @@
 
 zone initialiser_zone(char nom[30],int x,int y,int x1,int y1)
 {
+    int compteur = 0;
     zone zone;
     strcpy(zone.nom, nom);
     zone.x = x;
@@ -11,6 +12,28 @@ zone initialiser_zone(char nom[30],int x,int y,int x1,int y1)
     zone.taille_cible[0] = 0;
     zone.taille_cible[1] = 1;
     zone.tir_libre = true;
+
+    for (int x_ = x; x_ <= x1; x_++)
+    {
+        for (int y_ = y; y_ <= y1; y_++)
+        {
+            if((x_ % 2 == 0 && y_ % 2 != 0) || (x_ % 2 != 0 && y_ % 2 == 0))
+            {
+                zone.case_libre[compteur][0] = x_;
+                zone.case_libre[compteur][1] = y_;
+                compteur = compteur +1;
+            }
+        }
+        
+    }
+    for (int i = compteur; i < 8; i++)
+    {                
+        zone.case_libre[compteur][0] = 20;
+        zone.case_libre[compteur][1] = 20;
+    }
+    
+    
+
     return zone;
 }
 
@@ -349,15 +372,7 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
     ecart_x = zone[zone_choisi].x1 - zone[zone_choisi].x + 1;
     ecart_y = zone[zone_choisi].y1 - zone[zone_choisi].y + 1;
 
-    choix_tire_reperage_IA3(zone[zone_choisi],attaquant->grille_tirs,&x1,&y1);
-    do
-    {
-        *y = rand() % ecart_y + zone[zone_choisi].y;
-        *x = rand() % ecart_x + zone[zone_choisi].x;
-        printf("tire %d %d %d %d/ ",*y,*x,(*x % 2),(*y % 2));
-    } while ((!verifier_tir_utile(*x, *y, attaquant->grille_tirs)) 
-                || !(((*x % 2) == 0 && (*y % 2) != 0) 
-                || ((*x % 2) == 1 && (*y % 2) != 1)) ); 
+    choix_tire_reperage_IA3(zone[zone_choisi],attaquant->grille_tirs,&*x,&*y);
 }
 
 
@@ -383,30 +398,86 @@ bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y
 
 void choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y)
 {
-    int taille,ecart_x,ecart_y;
+    int taille,ecart_x,ecart_y,liste_tir[8][2],num_tir,nbr_tir = 0;
     char direction;
+    bool tir_rate = false;
 
     if (zone.taille_cible[0] >= zone.taille_cible[1])
     {
         taille = zone.taille_cible[0];
         direction = 'X';
+        printf("Xadopte%c %d %d/ ",direction,zone.taille_cible[0],zone.taille_cible[1]);
     }
     else if (zone.taille_cible[0] < zone.taille_cible[1])
     {
         taille = zone.taille_cible[1];
         direction = 'Y';
+        printf("Yadopte:%c %d %d/ ",direction,zone.taille_cible[0],zone.taille_cible[1]);
     }
 
-    ecart_x = zone.x1 - zone.x;
-    ecart_y = zone.y1 - zone.y;
+    updat_case_libre(zone.case_libre,grille_tirs);
+    generer_liste_tir(zone,liste_tir,&nbr_tir);    
 
     do
     {
-        *x = rand() % ecart_x + zone.x;
-        *y = rand() % ecart_x + zone.y;
-    } while (verifier_taille_compatible(grille_tirs,direction,taille,*x,*y) == false);    
+        num_tir = rand() % nbr_tir;
+        *x = liste_tir[num_tir][0];
+        *y = liste_tir[num_tir][1];
+        printf("compatible:%c %d %d/ ",direction,*x,*y);
+        if (verifier_taille_compatible(grille_tirs,direction,taille,*x,*y) == false)
+        {
+            supprimer_tir(liste_tir,num_tir,&nbr_tir);
+            tir_rate = true;
+        }
+        else
+        {
+            tir_rate = false;
+        }
+    } while (tir_rate == true);    
 
     printf("xy:%d %d/ ",*x,*y);
+}
+
+
+void updat_case_libre(int case_libre[8][2],char grille_tirs[10][10])
+{
+    for (int i = 0; i < 8 && case_libre[i][0] != 20 && case_libre[i][1] != 20; i++)
+    {
+        if (grille_tirs[(case_libre[i][1])][(case_libre[i][0])] != '.')
+        {
+            case_libre[i][0] = 10;
+            case_libre[i][1] = 10;
+        }
+    }
+}
+
+
+void generer_liste_tir(zone zone,int liste_tir[8][2],int *nbr_tir)
+{
+    int num_tir; 
+    for (int i = 0; i < 8 && zone.case_libre[i][0] != 20 && zone.case_libre[i][1] != 20; i++)
+    {
+        if (zone.case_libre[i][0] != 10 && zone.case_libre[i][1] != 10)
+        {
+            liste_tir[*nbr_tir][0] = zone.case_libre[i][0];
+            liste_tir[*nbr_tir][1] = zone.case_libre[i][1];
+            *nbr_tir = *nbr_tir + 1;
+        }
+    }
+}
+
+
+void supprimer_tir(int liste_tir[8][2],int num_tir,int *nbr_tir)
+{
+    for (int i = num_tir; i < *nbr_tir; i++)
+    {
+        liste_tir[i][0] = liste_tir[i+1][0];
+        liste_tir[i][1] = liste_tir[i+1][1];
+    }
+    liste_tir[*nbr_tir][0] = 10;
+    liste_tir[*nbr_tir][1] = 10;
+    *nbr_tir = *nbr_tir - 1;
+    
 }
 
 
@@ -414,33 +485,39 @@ bool verifier_taille_compatible(char grille_tirs[10][10],char direction,int tail
 {
     int comptage = 0;
 
-    if ((x % 2 == 0 && y % 2 == 0) || (x % 2 != 0 && y % 2 != 0))
+    if ((x % 2 == 0 && y % 2 == 0) || (x % 2 != 0 && y % 2 != 0) || grille_tirs[y][x] != '.')
     {
         return false;
     }
+    printf("\netape1 taille:%d/",taille);
 
     if (direction == 'X')
     {
-        for (int i = x;grille_tirs[y][i] == '.'; i++)
+        for (int i = x;grille_tirs[y][i] == '.' && i >= 0 && i <= 9 && comptage < taille; i++)
         {
             comptage = comptage + 1;
+            printf("comptage:%d %d %d/ ",comptage,i,y);
         }
-        for (int i = x;grille_tirs[y][(i-1)] == '.'; i--)
+        for (int i = x-1;grille_tirs[y][i] == '.' && i >= 0 && i <= 9 && comptage < taille; i--)
         {
             comptage = comptage + 1;
+            printf("comptage:%d %d %d/ ",comptage,i,y);
         } 
     }
     else if (direction == 'Y')
     {
-        for (int i = x;grille_tirs[i][x] == '.'; i++)
+        for (int i = y;grille_tirs[i][x] == '.' && i >= 0 && i <= 9 && comptage < taille; i++)
         {
             comptage = comptage + 1;
+            printf("comptage:%d %d %d/ ",comptage,x,i);
         }
-        for (int i = x;grille_tirs[(i-1)][x] == '.'; i--)
+        for (int i = y-1;grille_tirs[i][x] == '.' && i >= 0 && i <= 9 && comptage < taille; i--)
         {
             comptage = comptage + 1;
+            printf("comptage:%d %d %d/ ",comptage,x,i);
         } 
     }
+    printf("\n");
 
     if (comptage >= taille)
     {
@@ -470,6 +547,7 @@ int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]
         printf("\n");
     }
     meilleur_zone=choix_zone_favorable(flotte_estime_x,flotte_estime_y,zone,grille_tirs);
+    estime_direction_cible(zone[meilleur_zone],flotte_estime_x[meilleur_zone],flotte_estime_y[meilleur_zone]);
     printf("zone choisis:%d/ ",meilleur_zone);
     printf("taille cible:%d %d/ ",zone[meilleur_zone].taille_cible[0],zone[meilleur_zone].taille_cible[1]);
     return meilleur_zone;
@@ -607,6 +685,26 @@ void estime_flotte_par_zone(Navire navires[5],zone zone,char grille_tirs[10][10]
 
     }
 
+}
+
+
+void estime_direction_cible(zone zone,int flotte_estime_x[4],int flotte_estime_y[4])
+{
+    for (int navire = 0; navire < 4; navire++)
+    {
+        if (flotte_estime_x[navire] >= flotte_estime_y[navire])
+        {
+            printf("Xchoisi/ ");
+            zone.taille_cible[1] = 0;
+            return;
+        }
+        else if (flotte_estime_x[navire] < flotte_estime_y[navire])
+        {
+            zone.taille_cible[0] = 0;
+            printf("Ychoisi/ ");
+            return;
+        }
+    } 
 }
 
 
