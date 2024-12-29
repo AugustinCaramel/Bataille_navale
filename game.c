@@ -369,10 +369,12 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
     }
 
     zone_choisi = choix_zone_et_navire(defenseur->navires,zone,attaquant->grille_tirs);
-    ecart_x = zone[zone_choisi].x1 - zone[zone_choisi].x + 1;
-    ecart_y = zone[zone_choisi].y1 - zone[zone_choisi].y + 1;
 
-    choix_tire_reperage_IA3(zone[zone_choisi],attaquant->grille_tirs,&*x,&*y);
+    while (choix_tire_reperage_IA3(zone[zone_choisi],attaquant->grille_tirs,&*x,&*y) == false)
+    {
+        zone[zone_choisi].tir_libre = false;
+        zone_choisi = choix_zone_et_navire(defenseur->navires,zone,attaquant->grille_tirs);
+    }
 }
 
 
@@ -396,7 +398,7 @@ bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y
 }
 
 
-void choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y)
+bool choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y)
 {
     int taille,ecart_x,ecart_y,liste_tir[8][2],num_tir,nbr_tir = 0;
     char direction;
@@ -406,20 +408,24 @@ void choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y)
     {
         taille = zone.taille_cible[0];
         direction = 'X';
-        printf("Xadopte%c %d %d/ ",direction,zone.taille_cible[0],zone.taille_cible[1]);
     }
     else if (zone.taille_cible[0] < zone.taille_cible[1])
     {
         taille = zone.taille_cible[1];
         direction = 'Y';
-        printf("Yadopte:%c %d %d/ ",direction,zone.taille_cible[0],zone.taille_cible[1]);
     }
+    printf("adopte %c %d %d/ ",direction,zone.taille_cible[0],zone.taille_cible[1]);
 
     updat_case_libre(zone.case_libre,grille_tirs);
     generer_liste_tir(zone,liste_tir,&nbr_tir);    
 
     do
     {
+        if (nbr_tir == 0)
+        {
+            printf("nbr tir 0/ ");
+            return false;
+        }
         num_tir = rand() % nbr_tir;
         *x = liste_tir[num_tir][0];
         *y = liste_tir[num_tir][1];
@@ -436,6 +442,7 @@ void choix_tire_reperage_IA3(zone zone,char grille_tirs[10][10],int *x,int *y)
     } while (tir_rate == true);    
 
     printf("xy:%d %d/ ",*x,*y);
+    return true;
 }
 
 
@@ -547,7 +554,7 @@ int choix_zone_et_navire(Navire navires[5],zone zone[8],char grille_tirs[10][10]
         printf("\n");
     }
     meilleur_zone=choix_zone_favorable(flotte_estime_x,flotte_estime_y,zone,grille_tirs);
-    estime_direction_cible(zone[meilleur_zone],flotte_estime_x[meilleur_zone],flotte_estime_y[meilleur_zone]);
+    estime_direction_cible(&zone[meilleur_zone],flotte_estime_x[meilleur_zone],flotte_estime_y[meilleur_zone]);
     printf("zone choisis:%d/ ",meilleur_zone);
     printf("taille cible:%d %d/ ",zone[meilleur_zone].taille_cible[0],zone[meilleur_zone].taille_cible[1]);
     return meilleur_zone;
@@ -578,10 +585,11 @@ int choix_zone_favorable(int flotte_estime_x[8][4],int flotte_estime_y[8][4],zon
         nbr_navire_y = 0;
         for (int num_zone = 0;num_zone < 8;num_zone++)
         {
-            restrain_choix(flotte_estime_x,restrain_x,num_zone,navire,&nbr_navire_x,&zone_choisi_x,&nbr_restrain_x);
-            restrain_choix(flotte_estime_y,restrain_y,num_zone,navire,&nbr_navire_y,&zone_choisi_y,&nbr_restrain_y);
+            restrain_choix(flotte_estime_x,restrain_x,num_zone,navire,&nbr_navire_x,&nbr_restrain_x);
+            restrain_choix(flotte_estime_y,restrain_y,num_zone,navire,&nbr_navire_y,&nbr_restrain_y);
         }
     }
+    choisi_zone(restrain_x,restrain_y,&zone_choisi_x,&zone_choisi_y);
     for (int num_navire = 0; num_navire < 4; num_navire++)
     {
         if (flotte_estime_x[zone_choisi_x][num_navire] > flotte_estime_y[zone_choisi_y][num_navire])
@@ -635,12 +643,11 @@ void controle_zone_disponible(zone zone[8],char grille_tirs[10][10])
 }
 
 
-void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int navire,int *nbr_navire,int *zone_choisi,int *nbr_restrain)
+void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int navire,int *nbr_navire,int *nbr_restrain)
 {
     if(flotte_estime[num_zone][navire] == *nbr_navire && restrain[num_zone] == true)
     {
         *nbr_navire = flotte_estime[num_zone][navire];
-        *zone_choisi = num_zone;
 
     }
     else if (flotte_estime[num_zone][navire] < *nbr_navire && restrain[num_zone] == true)
@@ -651,7 +658,6 @@ void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int na
     else if (flotte_estime[num_zone][navire] > *nbr_navire && restrain[num_zone] == true)
     {
         *nbr_navire = flotte_estime[num_zone][navire];
-        *zone_choisi = num_zone;
         for (int posterieur = num_zone-1; posterieur >= 0; posterieur--)
         {
             if(restrain[posterieur] == true)
@@ -662,6 +668,32 @@ void restrain_choix(int flotte_estime[8][4],bool restrain[8],int num_zone,int na
         } 
     }
 
+}
+
+
+void choisi_zone(bool restrain_x[8],bool restrain_y[8],int *choix_zone_x,int *choix_zone_y)
+{
+    for (int num_zone = 0; num_zone < 8; num_zone++)
+    {
+        if (restrain_x[num_zone] == true && restrain_y[num_zone] == true)
+        {
+            *choix_zone_x = num_zone;
+            *choix_zone_y = num_zone;
+            return;
+        }
+        else  
+        {
+            if (restrain_x[num_zone] == true)
+            {
+                *choix_zone_x = num_zone;
+            }
+            if (restrain_y[num_zone] == true)
+            {
+                *choix_zone_y = num_zone;
+            }
+        }       
+    }
+    
 }
 
 
@@ -688,20 +720,20 @@ void estime_flotte_par_zone(Navire navires[5],zone zone,char grille_tirs[10][10]
 }
 
 
-void estime_direction_cible(zone zone,int flotte_estime_x[4],int flotte_estime_y[4])
+void estime_direction_cible(zone *zone,int flotte_estime_x[4],int flotte_estime_y[4])
 {
     for (int navire = 0; navire < 4; navire++)
     {
-        if (flotte_estime_x[navire] >= flotte_estime_y[navire])
+        if ((flotte_estime_x[navire] >= flotte_estime_y[navire]) && flotte_estime_x[navire] != 0)
         {
-            printf("Xchoisi/ ");
-            zone.taille_cible[1] = 0;
+            printf("Xchoisi%d %d %d %d/ ",zone->taille_cible[0],zone->taille_cible[1],flotte_estime_x[navire],flotte_estime_y[navire]);
+            zone->taille_cible[1] = 0;
             return;
         }
         else if (flotte_estime_x[navire] < flotte_estime_y[navire])
         {
-            zone.taille_cible[0] = 0;
-            printf("Ychoisi/ ");
+            printf("Ychoisi:%d %d %d %d/ ",zone->taille_cible[0],zone->taille_cible[1],flotte_estime_x[navire],flotte_estime_y[navire]);
+            zone->taille_cible[0] = 0;
             return;
         }
     } 
