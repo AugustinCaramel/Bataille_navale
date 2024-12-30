@@ -31,9 +31,5 @@ void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice); // Re
 bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX); // Renvoie false si le navire est entièrement touché
 bool update_navires(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau); // Vérifie l'ensemble de la flotte du joueur, met à jour les grilles de tirs et annonce si un nouveau navire est coulé
 bool verifier_joueur_a_perdu(Joueur *joueur); // Vérifie que le joueur a encore >=1 navire actif
-void actualiser_cible(Cible *cible, Navire navire); // Actualise la cible en retirant les positions touchées sur les navires coulés
-int definir_orientation(Cible cible); // Définit l'orientation de la cible (Nord ou Ouest) sur la base des positions touchées
-void decaler_droite_cible(Cible *cible, int y, int x); // Insère une nouvelle position touchée (y-x) en première position du tableau
-void decaler_gauche_cible(Cible *cible, int indice); // Supprime la position touchée à l'indice donné
 
 #endif // JOUEUR_H

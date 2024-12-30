@@ -30,7 +30,5 @@ void afficher_noms_joueurs(int att_indice, char att_nom[30], char def_nom[30]); 
 void initialiser_nom(char nom[30], int niveau, int indice); // Demande le nom du joueur ou initialise le nom de l'IA : "l'ordinateur"
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]); // Vérifie si le tir est utile (case non encore touchée)
 void afficher_type_partie(int niveau); // Affiche le type de partie (IA ou joueur contre joueur)
-void decaler_gauche_chasse(int tableau[][2], int indice, int *taille); // Supprime une case du tableau de chasse à l'indice donné
-void actualiser_chasse(int chasse[50][2], int *taille_chasse, int y, int x); // Actualise le tableau de chasse en retirant la case (y, x) si elle est présente
 
 #endif // UTILITARIES_H

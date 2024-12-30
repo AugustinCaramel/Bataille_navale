@@ -240,27 +240,3 @@ void afficher_type_partie(int niveau) // Affiche le type de partie en cours (cla
     else
         printf("\nPartie classique : Joueur vs Joueur\n");
 }
-
-void decaler_gauche_chasse(int tableau[][2], int indice, int *taille) // Supprime une case du tableau de chasse à l'indice donné
-{
-    for (int i = indice; i < *taille - 1; i++)
-    {
-        tableau[i][0] = tableau[i + 1][0];
-        tableau[i][1] = tableau[i + 1][1];
-    }
-    *taille = *taille - 1;
-}
-
-void actualiser_chasse(int chasse[50][2], int *taille_chasse, int y, int x) // Actualise le tableau de chasse en retirant la case (y, x) si elle est présente
-{
-    int indice = 0;
-    while (indice < *taille_chasse && (chasse[indice][0] != y || chasse[indice][1] != x))
-    {
-        indice++;
-    }
-    if (indice < *taille_chasse)
-    {
-        printf("Case retiree ; %d-%d\n", chasse[indice][0], chasse[indice][1]);
-        decaler_gauche_chasse(chasse, indice, taille_chasse);
-    }
-}
