@@ -29,7 +29,7 @@ void placer_navires(Joueur *joueur, int niveau); // Définit le mode aléatoire 
 void afficher_grilles(Joueur *attaquant, Joueur *defenseur); // Affichage des grilles de tirs des deux joueurs côte-côte
 void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice); // Remplace les X par des N sur un navire, sur une grille de tirs, si le navire est coulé
 bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int indiceX); // Renvoie false si le navire est entièrement touché
-bool update_navires(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau); // Vérifie l'ensemble de la flotte du joueur, met à jour les grilles de tirs et annonce si un nouveau navire est coulé
+bool update_navires(Joueur *attaquant, Joueur *defenseur); // Vérifie l'ensemble de la flotte du joueur, met à jour les grilles de tirs et annonce si un nouveau navire est coulé
 bool verifier_joueur_a_perdu(Joueur *joueur); // Vérifie que le joueur a encore >=1 navire actif
 
 #endif // JOUEUR_H

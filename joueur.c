@@ -137,7 +137,7 @@ bool verifier_etat_navire(Joueur *defenseur, int indice_navire, int indiceY, int
     return false;
 }
 
-bool update_navires(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau) // Vérifie l'ensemble de la flotte du joueur, met à jour les grilles de tirs et annonce si un nouveau navire est coulé
+bool update_navires(Joueur *attaquant, Joueur *defenseur) // Vérifie l'ensemble de la flotte du joueur, met à jour les grilles de tirs et annonce si un nouveau navire est coulé
 {
     for (int i = 0; i < 5; i++)
     {
@@ -168,8 +168,6 @@ bool update_navires(Joueur *attaquant, Joueur *defenseur, Cible *cible, int nive
                 update_grille_tirs(defenseur, attaquant, i);
                 afficher_grilles(attaquant, defenseur);
                 printf("\nLe %s de %s a atteint le fond.\n", defenseur->navires[i].type, defenseur->nom);
-                if (niveau == 3 || niveau == 2)
-                    actualiser_cible(cible, defenseur->navires[i]);
                 return true;
             }
         }

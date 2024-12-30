@@ -94,7 +94,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, int niveau) // Gère les tou
                 }
                 else if (niveau == 2)
                 {
-                    touche = tirer_IA1(joueur2, joueur1, &cible, niveau);
+                    touche = tirer_IA2(joueur2, joueur1);
                 }
                 else if (niveau == 3)
                 {
@@ -151,7 +151,7 @@ bool tirer(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau) // Fo
         printf("\nDans le mille !\n");
         attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
         defenseur->grille[y][x] = 'X';      // Marque le navire touché
-        update_navires(attaquant, defenseur, cible, niveau);
+        update_navires(attaquant, defenseur);
         return true;
     }
     else if (defenseur->grille[y][x] == 'X')
@@ -264,4 +264,23 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
         *y = rand() % 10;
         *x = rand() % 10;
     } while (!verifier_tir_utile(*x, *y, attaquant->grille_tirs)); 
+}
+
+bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y)
+{
+    if (defenseur->grille[y][x] == 'N')
+    {
+        printf("\nDans le mille !\n");
+        attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
+        defenseur->grille[y][x] = 'X';      // Marque le navire touché
+        update_navires(attaquant, defenseur);
+        return true;
+    }
+    else
+    {
+        printf("\nDans l'eau...\n");
+        attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
+        afficher_grilles(attaquant, defenseur);
+        return false;
+    }
 }
