@@ -255,7 +255,7 @@ sleep(2);
     {
         return false;
     }
-
+}
 
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y)
 {
