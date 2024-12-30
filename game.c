@@ -224,9 +224,27 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
 
 bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
 {
-    sleep(2);
-    int y, x;
-    mode_reperage(attaquant,&x,&y);
+sleep(2);
+    int y, x,last_y = 11,last_x = 11;
+    bool retenter = false;
+
+    do
+    {
+        if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
+        {
+            retenter = mode_chasse_IA2(attaquant,&x,&y,&last_x,&last_y);
+        }
+        else
+        {
+            if (retenter == false)
+            {
+                mode_reperage(attaquant,&x,&y);
+            }
+            
+        }
+
+    } while (retenter);
+    
 
     // Vérifie si le tir touche un navire
     if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
@@ -237,7 +255,6 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
     {
         return false;
     }
-}
 
 
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y)
