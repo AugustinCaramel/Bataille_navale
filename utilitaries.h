@@ -31,4 +31,13 @@ void initialiser_nom(char nom[30], int niveau, int indice); // Demande le nom du
 bool verifier_tir_utile(int x, int y, char grille_tirs[10][10]); // Vérifie si le tir est utile (case non encore touchée)
 void afficher_type_partie(int niveau); // Affiche le type de partie (IA ou joueur contre joueur)
 
+
+void melanger_liste(int ordre_tir[4]);
+void detecte_direction_navire(char grille_tirs[10][10],int x_tir,int y_tir,int *direction);
+bool navire_imcomplet_sur_direction(char grille_tirs[10][10],int x,int y,int direction);
+void trouver_coordonnee_tir_IA(int ordre_tir[4],int numero_tir,int direction,int *x_tir,int *y_tir,int x,int y);
+bool selectionner_tir_IA2(int *x, int *y, char grille_tirs[10][10]);
+bool selectionner_tir_IA3(int *x, int *y, char grille_tirs[10][10]);
+bool trouver_tir_IA2(int *x, int *y, int*last_x, int*last_y, char grille_tirs[10][10]);
+
 #endif // UTILITARIES_H

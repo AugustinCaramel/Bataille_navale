@@ -192,26 +192,95 @@ bool tirer_IA1(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau) /
 {
     sleep(1);
     int y, x;
-    do
-    {
-        y = rand() % 10;
-        x = rand() % 10;
-    } while (!verifier_tir_utile(x, y, attaquant->grille_tirs)); // Vérifie que le tir n'a pas déjà été tenté
+    mode_reperage(attaquant,&x,&y);
 
     // Vérifie si le tir touche un navire
-    if (defenseur->grille[y][x] == 'N')
+    if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
     {
-        printf("\nDans le mille !\n");
-        attaquant->grille_tirs[y][x] = 'X'; // Marque un tir réussi
-        defenseur->grille[y][x] = 'X';      // Marque le navire touché
-        update_navires(attaquant, defenseur, cible, niveau);
         return true;
     }
     else
     {
-        printf("\nDans l'eau...\n");
-        attaquant->grille_tirs[y][x] = 'O'; // Marque un tir manqué
-        afficher_grilles(attaquant, defenseur);
         return false;
     }
+}
+
+
+bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
+{
+    sleep(2);
+    int y, x,last_y = 11,last_x = 11;
+    bool retenter = false;
+
+    do
+    {
+        if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
+        {
+            retenter = mode_chasse_IA2(attaquant,&x,&y,&last_x,&last_y);
+        }
+        else
+        {
+            if (retenter == false)
+            {
+                mode_reperage(attaquant,&x,&y);
+            }
+            
+        }
+
+    } while (retenter);
+    
+
+    // Vérifie si le tir touche un navire
+    if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
+{
+    sleep(2);
+    int y, x;
+    mode_reperage(attaquant,&x,&y);
+
+    // Vérifie si le tir touche un navire
+    if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y)
+{
+    if (selectionner_tir_IA2(&*x, &*y,attaquant->grille_tirs))
+    {
+        printf("x:%d y:%d",*x,*y);
+        return false;
+    }
+    else
+    {
+        *last_x = *x;
+        *last_y = *y;
+        return true;
+    }
+}
+
+
+
+void mode_reperage(Joueur *attaquant,int *x,int *y)
+{
+    do
+    {
+        *y = rand() % 10;
+        *x = rand() % 10;
+    } while (!verifier_tir_utile(*x, *y, attaquant->grille_tirs)); 
 }
