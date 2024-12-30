@@ -70,25 +70,6 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, int niveau) // Gère les tou
     bool touche;                           // Permet de savoir si un tir touche un navire
     bool rebelote = false;                 // Permet de rejouer si un tir touche un navire
     Cible cible = initialiser_cible();     // Modes de jeu IA 2 et 3
-    int chasse[50][2], taille_chasse = 50; // Mode de jeu IA 3
-
-    if (niveau == 3) // Mode de jeu IA 3 : Initialisation du tableau de chasse
-    {
-        int index = 0;
-        for (int i = 0; i < 10; i++)
-        {
-            for (int j = 0; j < 10; j++)
-            {
-                if (i % 2 == j % 2)
-                {
-                    chasse[index][0] = i;
-                    chasse[index][1] = j;
-                    index++;
-                }
-            }
-        }
-        melangerAvecPriorite(chasse, taille_chasse);
-    }
 
     while (true)
     {

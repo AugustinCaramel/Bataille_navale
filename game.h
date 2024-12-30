@@ -13,6 +13,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, int niveau); // Gère les to
 /* Fonctions de tir différenciées par niveau */
 
 bool tirer(Joueur *attaquant, Joueur *defenseur,Cible *cible, int niveau); // Fonction de tir pour les joueurs humain
+bool tirer_IA1(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau); // Mode de jeu IA 1 : Tir aléatoire
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);
 
