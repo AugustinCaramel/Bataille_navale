@@ -1,4 +1,5 @@
 #include "utilitaries.h"
+#include "game.h"
 
 bool verifier_commande() // Termine le programme si la variable globale saisie = T, renvoie false si saisie = Q, affiche les instructions si saisie = I, et renvoie true si saisie != Q et != T
 {

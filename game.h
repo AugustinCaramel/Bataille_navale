@@ -5,6 +5,15 @@
 
 extern char saisie[3]; // Variable globale pour les saisies
 
+typedef struct
+{
+    int num_damier; // pair pair = 0, pair impair = 1
+    int nbr_tir;
+    int coordonee_case[50][2];
+    int nbr_case_vide[50][2];
+} damier;
+
+damier initialiser_damier(int num_damier);
 void menu_principal(); // Lance le menu principal, la fonction se lance en début d'exécution et se maintient tout au long de cette dernière
 void choix_niveau(int *niveau); // Affiche les différents niveaux et modifie la valeur de niveau avec la valeur saisie par l'utilisateur
 void lancer_partie(int niveau); // Initialise les deux joueurs et lance les tours
@@ -19,6 +28,9 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur);
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);
+void genere_probabilite_case(char grille_tirs[10][10],int nbr_case_vide[2],int ligne,int colone); 
+void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10]); // crée des tableau pour les deu damier et determine le nombre de case vide pour chaque case
+void mode_reperage_IA3(Joueur *attaquant,int *x,int *y);
 bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y);
 
 #endif // GAME_H

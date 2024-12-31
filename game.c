@@ -1,5 +1,20 @@
 #include "game.h"
 
+damier initialiser_damier(int num_damier)
+{
+    damier damier;
+    damier.num_damier = num_damier;
+    damier.nbr_tir = 50;
+    for (int num_case = 0; num_case < 50; num_case++)
+    {
+        damier.coordonee_case[num_case][0] = 0;
+        damier.coordonee_case[num_case][1] = 0;
+        damier.nbr_case_vide[num_case][0] = 0;
+        damier.nbr_case_vide[num_case][1] = 0;
+    }
+    
+}
+
 void menu_principal() // Lance le menu principal, la fonction se lance en début d'exécution et se maintient tout au long de cette dernière
 {
     do
@@ -300,6 +315,81 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
         *x = rand() % 10;
     } while (!verifier_tir_utile(*x, *y, attaquant->grille_tirs)); 
 }
+
+
+void mode_reperage_IA3(Joueur *attaquant,int *x,int *y)
+{
+    damier damier_0 = initialiser_damier(0);
+    damier damier_1 = initialiser_damier(1);
+
+    genere_liste_case_vide(&damier_0,&damier_1,attaquant->grille_tirs);
+
+    printf("mode reperage/ ");
+    do
+    {
+        *y = rand() % 10;
+        *x = rand() % 10;
+    } while (!verifier_tir_utile(*x, *y, attaquant->grille_tirs)); 
+}
+
+
+
+
+void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10])
+{
+    int num_case_0 = 0,num_case_1 = 0;
+    for (int ligne = 0; ligne < 10; ligne++)
+    {
+        for (int colone = 0; colone < 10; colone++)
+        {
+            if ((ligne % 2 == 0 && colone % 2 == 0) || (ligne % 2 != 0 && colone % 2 != 0))
+            {
+            genere_probabilite_case(grille_tirs,damier_0->nbr_case_vide[num_case_0],ligne,colone);
+            damier_0->coordonee_case[num_case_0][0] = ligne;
+            damier_0->coordonee_case[num_case_0][1] = colone;
+            num_case_0 = num_case_0 + 1;
+            }
+            else
+            {
+            genere_probabilite_case(grille_tirs,damier_1->nbr_case_vide[num_case_1],ligne,colone);
+            damier_1->coordonee_case[num_case_1][0] = ligne;
+            damier_1->coordonee_case[num_case_1][1] = colone;
+            num_case_1 = num_case_1 + 1;
+            }
+        }
+        
+    }
+    damier_0->nbr_tir = num_case_0 - 1;
+    damier_1->nbr_tir = num_case_1 - 1;
+    
+}
+
+
+void genere_probabilite_case(char grille_tirs[10][10],int nbr_case_vide[2],int ligne,int colone)
+{
+    int compteur = 0;
+    for (int ligne_decale = ligne; grille_tirs[colone][ligne_decale] == '.' && compteur < 9; ligne_decale++)
+    {
+        compteur = compteur + 1;
+    }
+        for (int ligne_decale = (ligne - 1); grille_tirs[colone][ligne_decale] == '.' && compteur < 9; ligne_decale--)
+    {
+        compteur = compteur + 1;
+    }
+    nbr_case_vide[0] = compteur;
+    compteur = 0;
+
+        for (int colone_decale = colone; grille_tirs[colone_decale][ligne] == '.' && compteur < 9; colone_decale++)
+    {
+        compteur = compteur + 1;
+    }
+        for (int colone_decale = (colone - 1); grille_tirs[colone_decale][ligne] == '.' && compteur < 9; colone_decale--)
+    {
+        compteur = compteur + 1;
+    }    
+    nbr_case_vide[1] = compteur;
+}
+
 
 bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y)
 {
