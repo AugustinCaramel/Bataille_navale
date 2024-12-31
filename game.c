@@ -98,7 +98,7 @@ void lancer_tours(Joueur *joueur1, Joueur *joueur2, int niveau) // Gère les tou
                 }
                 else if (niveau == 3)
                 {
-                    touche = tirer_IA1(joueur2, joueur1, &cible, niveau);
+                    touche = tirer_IA3(joueur2, joueur1);
                 }
             }
             else
@@ -224,7 +224,7 @@ bool tirer_IA2(Joueur *attaquant, Joueur *defenseur)
 
 bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
 {
-sleep(2);
+    //sleep(2);
     int y, x,last_y = 11,last_x = 11;
     bool retenter = false;
 
@@ -232,21 +232,23 @@ sleep(2);
     {
         if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
         {
+            printf("trouver/ ");
             retenter = mode_chasse_IA3(attaquant,&x,&y,&last_x,&last_y);
         }
         else
         {
+            printf("pas trouver/ ");
             if (retenter == false)
             {
+                printf("retenter false/ ");
                 mode_reperage(attaquant,&x,&y);
             }
             
         }
 
     } while (retenter);
-    
 
-    // Vérifie si le tir touche un navire
+        // Vérifie si le tir touche un navire
     if(verifie_tire_touche_navire(attaquant,defenseur,x,y))
     {
         return true;
@@ -291,6 +293,7 @@ bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y)
 
 void mode_reperage(Joueur *attaquant,int *x,int *y)
 {
+    printf("mode reperage/ ");
     do
     {
         *y = rand() % 10;
