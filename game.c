@@ -232,7 +232,7 @@ sleep(2);
     {
         if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
         {
-            retenter = mode_chasse_IA2(attaquant,&x,&y,&last_x,&last_y);
+            retenter = mode_chasse_IA3(attaquant,&x,&y,&last_x,&last_y);
         }
         else
         {
@@ -272,6 +272,21 @@ bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y)
     }
 }
 
+
+bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y)
+{
+    if (selectionner_tir_IA3(&*x, &*y,attaquant->grille_tirs))
+    {
+        printf("x:%d y:%d",*x,*y);
+        return false;
+    }
+    else
+    {
+        *last_x = *x;
+        *last_y = *y;
+        return true;
+    }
+}
 
 
 void mode_reperage(Joueur *attaquant,int *x,int *y)

@@ -16,6 +16,7 @@ bool tirer(Joueur *attaquant, Joueur *defenseur,Cible *cible, int niveau); // Fo
 bool tirer_IA1(Joueur *attaquant, Joueur *defenseur, Cible *cible, int niveau); // Mode de jeu IA 1 : Tir aléatoire
 bool tirer_IA2(Joueur *attaquant, Joueur *defenseur);
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
+bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);
 bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y);
 
