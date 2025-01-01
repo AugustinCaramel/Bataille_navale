@@ -8,9 +8,11 @@ extern char saisie[3]; // Variable globale pour les saisies
 typedef struct
 {
     int num_damier; // pair pair = 0, pair impair = 1
-    int nbr_tir;
+    int nbr_case; // nombr de case vide
+    int nbr_tir; // nombre de case ayant un tir optimal
     int coordonee_case[50][2]; // doordonnee de la case
-    int nbr_case_vide[50]; // nombre de case vide adjasente de la case
+    int nbr_case_adjacente[50]; // nombre de case vide adjasente de la case
+    int liste_tir[50]; // liste des numero de cases des tires optimal
 } damier;
 
 damier initialiser_damier(int num_damier);
@@ -28,10 +30,12 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur);
 bool mode_chasse_IA2(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);
-void genere_liste_tir_optimal(damier damier,int liste_tir[50],int *taille_max);
-void genere_probabilite_case(char grille_tirs[10][10],int nbr_case_vide,int ligne,int colone); 
-void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10]); // crée des tableau pour les deu damier et determine le nombre de case vide pour chaque case
-void mode_reperage_IA3(Joueur *attaquant,int *x,int *y);
+void choisi_tir_optimal(damier damier,int *x,int *y);
+void genere_liste_tir_optimal(damier *damier,int *nbr_case_max);
+void genere_probabilite_case(char grille_tirs[10][10],int *nbr_case_vide,int ligne,int colone,int taille_navire); 
+void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10],int taille_navire); // crée des tableau pour les deu damier et determine le nombre de case vide pour chaque case
+int determine_taille_navire(Joueur defenseur);
+void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y);
 bool verifie_tire_touche_navire(Joueur *attaquant, Joueur *defenseur,int x,int y);
 
 #endif // GAME_H

@@ -5,11 +5,13 @@ damier initialiser_damier(int num_damier)
     damier damier;
     damier.num_damier = num_damier;
     damier.nbr_tir = 50;
+    damier.nbr_case = 0;
+    damier.nbr_tir = 0;
     for (int num_case = 0; num_case < 50; num_case++)
     {
         damier.coordonee_case[num_case][0] = 0;
         damier.coordonee_case[num_case][1] = 0;
-        damier.nbr_case_vide[num_case] = 0;
+        damier.nbr_case_adjacente[num_case] = 0;
     }
     
 }
@@ -246,16 +248,13 @@ bool tirer_IA3(Joueur *attaquant, Joueur *defenseur)
     {
         if(trouver_tir_IA2(&x, &y,&last_x,&last_y, attaquant->grille_tirs))
         {
-            printf("trouver/ ");
             retenter = mode_chasse_IA3(attaquant,&x,&y,&last_x,&last_y);
         }
         else
         {
-            printf("pas trouver/ ");
             if (retenter == false)
             {
-                printf("retenter false/ ");
-                mode_reperage(attaquant,&x,&y);
+                mode_reperage_IA3(attaquant,defenseur,&x,&y);
             }
             
         }
@@ -316,106 +315,145 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
 }
 
 
-void mode_reperage_IA3(Joueur *attaquant,int *x,int *y)
+void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
 {
-    int liste_tir_0[50],liste_tir_1[50],taille_max_0 = 0,taille_max_1;
+    int liste_tir_0[50],liste_tir_1[50],nbr_case_max_0 = 0,nbr_case_max_1,taille_navire;
     damier damier_0 = initialiser_damier(0);
     damier damier_1 = initialiser_damier(1);
 
-    genere_liste_case_vide(&damier_0,&damier_1,attaquant->grille_tirs);
+    taille_navire = determine_taille_navire(*defenseur);
+    printf("taille_navire:%d\n",taille_navire);
+    genere_liste_case_vide(&damier_0,&damier_1,attaquant->grille_tirs,taille_navire);
+    
+    genere_liste_tir_optimal(&damier_0,&nbr_case_max_0);
+    nbr_case_max_1 = nbr_case_max_0;
+    printf("\n");
+    genere_liste_tir_optimal(&damier_1,&nbr_case_max_1);
 
-    genere_liste_tir_optimal(damier_0,liste_tir_0,&taille_max_0);
-    taille_max_1 = taille_max_0;
-    genere_liste_tir_optimal(damier_1,liste_tir_1,&taille_max_1);
-
-    printf("mode reperage/ ");
-    do
+    if (nbr_case_max_1 > nbr_case_max_0)
     {
-        *y = rand() % 10;
-        *x = rand() % 10;
-    } while (!verifier_tir_utile(*x, *y, attaquant->grille_tirs)); 
+        choisi_tir_optimal(damier_1,&*x,&*y);
+    }
+    else
+    {
+        choisi_tir_optimal(damier_0,&*x,&*y);
+    }
+    printf("xychoisi:%d %d",*x,*y);
 }
 
 
-void genere_liste_tir_optimal(damier damier,int liste_tir[50],int *taille_max)
+int determine_taille_navire(Joueur defenseur)
 {
-    int num_tir = 0;
-    for (int num_case = 0; num_case < damier.nbr_tir; num_case++)
+    for (int num_navire = 0; num_navire < 5; num_navire++)
     {
-        if (damier.nbr_case_vide[num_case] > *taille_max)
+        if (defenseur.navires[num_navire].etat == true)
         {
-            for (; num_tir > 0; num_tir--)
-            {
-                liste_tir[num_tir] = 0;
-            }
-            liste_tir[num_tir] = num_case;
+            return defenseur.navires[num_navire].longueur;
         }
-        else if(damier.nbr_case_vide[num_case] == *taille_max && damier.nbr_case_vide[num_case] != 0)
-        {
-            num_tir = num_tir + 1;
-            liste_tir[num_tir] = num_case;
-        }
-    }
-    num_tir = num_tir + 1;
-    for (int tir_restant = num_tir; tir_restant < 50; num_tir++)
-    {
-        liste_tir[tir_restant] = 100;
+        
     }
     
 }
 
 
-void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10])
+void choisi_tir_optimal(damier damier,int *x,int *y)
+{
+    int case_choisi,num_tir;
+
+    num_tir = rand() % damier.nbr_tir;
+    case_choisi = damier.liste_tir[num_tir];
+
+    *x = damier.coordonee_case[case_choisi][0];
+    *y = damier.coordonee_case[case_choisi][1];
+}
+
+
+void genere_liste_tir_optimal(damier *damier,int *nbr_case_max)
+{
+    int num_tir = 0;
+    //printf("nbrcase:%d %d/ ",damier->nbr_case,*nbr_case_max);
+    for (int num_case = 0; num_case < damier->nbr_case; num_case++)
+    {
+        //printf("caseadj:%d/ ",damier->nbr_case_adjacente[num_case]);
+        if (damier->nbr_case_adjacente[num_case] > *nbr_case_max)
+        {
+            *nbr_case_max = damier->nbr_case_adjacente[num_case];
+            for (; num_tir > 0; num_tir--)
+            {
+                damier->liste_tir[num_tir] = 0;
+            }
+            damier->liste_tir[num_tir] = num_case;
+            //printf("Tlistetir:%d %d %d/ ",num_tir,damier->liste_tir[num_tir],num_case);
+        }
+        else if(damier->nbr_case_adjacente[num_case] == *nbr_case_max && damier->nbr_case_adjacente[num_case] != 0)
+        {
+            num_tir = num_tir + 1;
+            damier->liste_tir[num_tir] = num_case;
+            //printf("Flistetir:%d %d %d/ ",num_tir,damier->liste_tir[num_tir],num_case);
+        }
+    }
+    damier->nbr_tir = num_tir + 1;
+    
+}
+
+
+void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10],int taille_navire)
 {
     int num_case_0 = 0,num_case_1 = 0;
     for (int ligne = 0; ligne < 10; ligne++)
     {
+        printf("\n");
         for (int colone = 0; colone < 10; colone++)
         {
             if ((ligne % 2 == 0 && colone % 2 == 0) || (ligne % 2 != 0 && colone % 2 != 0))
             {
-            genere_probabilite_case(grille_tirs,damier_0->nbr_case_vide[num_case_0],ligne,colone);
+            genere_probabilite_case(grille_tirs,&damier_0->nbr_case_adjacente[num_case_0],ligne,colone,taille_navire);
+            printf("proba0:%d %d %d/ ",ligne,colone,damier_0->nbr_case_adjacente[num_case_0]);
             damier_0->coordonee_case[num_case_0][0] = ligne;
             damier_0->coordonee_case[num_case_0][1] = colone;
             num_case_0 = num_case_0 + 1;
             }
             else
             {
-            genere_probabilite_case(grille_tirs,damier_1->nbr_case_vide[num_case_1],ligne,colone);
+            genere_probabilite_case(grille_tirs,&damier_1->nbr_case_adjacente[num_case_1],ligne,colone,taille_navire);
+            printf("proba1:%d %d %d/ ",ligne,colone,damier_1->nbr_case_adjacente[num_case_1]);
             damier_1->coordonee_case[num_case_1][0] = ligne;
             damier_1->coordonee_case[num_case_1][1] = colone;
             num_case_1 = num_case_1 + 1;
             }
         }
-        
     }
-    damier_0->nbr_tir = num_case_0;
-    damier_1->nbr_tir = num_case_1;
+    damier_0->nbr_case = num_case_0;
+    damier_1->nbr_case = num_case_1;
     
 }
 
 
-void genere_probabilite_case(char grille_tirs[10][10],int nbr_case_vide,int ligne,int colone)
+void genere_probabilite_case(char grille_tirs[10][10],int *nbr_case_adjacente,int ligne,int colone,int taille_navire)
 {
     int compteur = 0;
-    for (int ligne_decale = ligne; grille_tirs[colone][ligne_decale] == '.' && compteur < 17; ligne_decale++)
+    for (int ligne_decale = ligne; grille_tirs[colone][ligne_decale] == '.' && ligne_decale < (ligne + taille_navire) && ligne_decale <= 9 && compteur < ((4 * taille_navire) - 1); ligne_decale++)
     {
         compteur = compteur + 1;
+        //printf("ligne+:%d %d/ ",compteur,ligne_decale);
     }
-    for (int ligne_decale = (ligne - 1); grille_tirs[colone][ligne_decale] == '.' && compteur < 17; ligne_decale--)
+    for (int ligne_decale = (ligne - 1); grille_tirs[colone][ligne_decale] == '.' && ligne_decale > (ligne - taille_navire) && ligne_decale >= 0 && compteur < ((4 * taille_navire) - 1); ligne_decale--)
     {
         compteur = compteur + 1;
+        //printf("ligne-:%d %d/ ",compteur,ligne_decale);
     }
 
-    for (int colone_decale = (colone + 1); grille_tirs[colone_decale][ligne] == '.' && compteur < 17; colone_decale++)
+    for (int colone_decale = (colone + 1); grille_tirs[colone_decale][ligne] == '.' && colone_decale < (colone + taille_navire) && colone_decale <= 9 && compteur < ((4 * taille_navire) - 1); colone_decale++)
     {
         compteur = compteur + 1;
+        //printf("colone+:%d %d/ ",compteur,colone_decale);
     }
-    for (int colone_decale = (colone - 1); grille_tirs[colone_decale][ligne] == '.' && compteur < 17; colone_decale--)
+    for (int colone_decale = (colone - 1); grille_tirs[colone_decale][ligne] == '.' && colone_decale > (colone - taille_navire) && colone_decale >= 0 && compteur < ((4 * taille_navire) - 1); colone_decale--)
     {
         compteur = compteur + 1;
+        //printf("colone-:%d %d/ ",compteur,colone_decale);
     }    
-    nbr_case_vide = compteur;
+    *nbr_case_adjacente = compteur;
 }
 
 
