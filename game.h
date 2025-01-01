@@ -32,7 +32,7 @@ bool mode_chasse_IA3(Joueur *attaquant,int *x,int *y,int *last_x,int *last_y);
 void mode_reperage(Joueur *attaquant,int *x,int *y);
 void choisi_tir_optimal(damier damier,int *x,int *y);
 void genere_liste_tir_optimal(damier *damier,int *nbr_case_max);
-void genere_probabilite_case(char grille_tirs[10][10],int *nbr_case_vide,int ligne,int colone,int taille_navire); 
+void genere_probabilite_case(char grille_tirs[10][10],int *nbr_case_vide,int ligne,int colone,int taille_navire); // ligne x , colone y
 void genere_liste_case_vide(damier *damier_0,damier *damier_1,char grille_tirs[10][10],int taille_navire); // crée des tableau pour les deu damier et determine le nombre de case vide pour chaque case
 int determine_taille_navire(Joueur defenseur);
 void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y);
