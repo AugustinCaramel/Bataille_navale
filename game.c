@@ -317,7 +317,7 @@ void mode_reperage(Joueur *attaquant,int *x,int *y)
 
 void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
 {
-    int liste_tir_0[50],liste_tir_1[50],nbr_case_max_0 = 0,nbr_case_max_1,taille_navire;
+    int liste_tir_0[50],liste_tir_1[50],nbr_case_max_0 = 0,nbr_case_max_1 = 0,taille_navire,choix_aleatoir;
     damier damier_0 = initialiser_damier(0);
     damier damier_1 = initialiser_damier(1);
 
@@ -326,18 +326,31 @@ void mode_reperage_IA3(Joueur *attaquant,Joueur *defenseur,int *x,int *y)
     genere_liste_case_vide(&damier_0,&damier_1,attaquant->grille_tirs,taille_navire);
     
     genere_liste_tir_optimal(&damier_0,&nbr_case_max_0);
-    nbr_case_max_1 = nbr_case_max_0;
     printf("\n");
     genere_liste_tir_optimal(&damier_1,&nbr_case_max_1);
 
-    if (nbr_case_max_1 > nbr_case_max_0)
+    if (nbr_case_max_1 == nbr_case_max_0)
+    {
+        choix_aleatoir = rand() % 2;
+        if (choix_aleatoir == 0)
+        {
+            choisi_tir_optimal(damier_0,&*x,&*y);
+        }
+        else
+        {
+            choisi_tir_optimal(damier_1,&*x,&*y);
+        }
+        
+    }
+    else if(nbr_case_max_1 > nbr_case_max_0)
     {
         choisi_tir_optimal(damier_1,&*x,&*y);
     }
-    else
+    else if(nbr_case_max_1 < nbr_case_max_0)
     {
         choisi_tir_optimal(damier_0,&*x,&*y);
     }
+
     printf("xychoisi:%d %d",*x,*y);
 }
 
@@ -438,23 +451,23 @@ void genere_probabilite_case(char grille_tirs[10][10],int *nbr_case_adjacente,in
         for (int ligne_decale = ligne; grille_tirs[ligne_decale][colone] == '.' && ligne_decale < (ligne + taille_navire) && ligne_decale <= 9 && compteur < ((4 * taille_navire) - 1); ligne_decale++)
         {
             compteur = compteur + 1;
-            printf("ligne+:%d %d %d %c %c/ ",compteur,ligne_decale,colone,grille_tirs[ligne_decale][colone],grille_tirs[colone][ligne]);
+            //printf("ligne+:%d %d %d %c %c/ ",compteur,ligne_decale,colone,grille_tirs[ligne_decale][colone],grille_tirs[colone][ligne]);
         }
         for (int ligne_decale = (ligne - 1); grille_tirs[ligne_decale][colone] == '.' && ligne_decale > (ligne - taille_navire) && ligne_decale >= 0 && compteur < ((4 * taille_navire) - 1); ligne_decale--)
         {
             compteur = compteur + 1;
-            printf("ligne-:%d %d %d/ ",compteur,ligne_decale,colone);
+            //printf("ligne-:%d %d %d/ ",compteur,ligne_decale,colone);
         }
 
         for (int colone_decale = (colone + 1); grille_tirs[ligne][colone_decale] == '.' && colone_decale < (colone + taille_navire) && colone_decale <= 9 && compteur < ((4 * taille_navire) - 1); colone_decale++)
         {
             compteur = compteur + 1;
-            printf("colone+:%d %d %d/ ",compteur,ligne,colone_decale);
+            //printf("colone+:%d %d %d/ ",compteur,ligne,colone_decale);
         }
         for (int colone_decale = (colone - 1); grille_tirs[ligne][colone_decale] == '.' && colone_decale > (colone - taille_navire) && colone_decale >= 0 && compteur < ((4 * taille_navire) - 1); colone_decale--)
         {
             compteur = compteur + 1;
-            printf("colone-:%d %d %d/ ",compteur,ligne,colone_decale);
+            //printf("colone-:%d %d %d/ ",compteur,ligne,colone_decale);
         }    
     }
     *nbr_case_adjacente = compteur;
