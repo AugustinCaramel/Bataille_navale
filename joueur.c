@@ -20,25 +20,6 @@ Joueur initialiser_joueur(int indice, int niveau) // Initialise les attributs du
     return joueur;
 }
 
-Cible initialiser_cible() // Initialise les attributs de la cible : état, tableau des positions touchées (vide), orientations possibles, nombre de touches
-{
-    Cible cible;
-    cible.etat = false;
-    for (int i = 0; i < 20; i++)
-    {
-        for (int j = 0; j < 2; j++)
-        {
-            cible.touche_position[i][j] = -1;
-        }
-    }
-    for (int i = 0; i < 4; i++)
-    {
-        cible.orientation[i] = false;
-    }
-    cible.nombre_touches = 0;
-    return cible;
-}
-
 void placer_navires(Joueur *joueur, int niveau) // Définit le mode aléatoire ou non, crée les 5 navires et les positionne sur la grille
 {
     bool aleatoire = (niveau!=0 && joueur->indice == 2) ? true : false;

@@ -13,9 +13,9 @@ Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], bool a
 
     struct timespec ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = rand()%100000000L; // 100ms
+    ts.tv_nsec = rand() % 100000000L; // Entre 0ms et 100ms de délai
 
-    affichage_placements(niveau, indice, navire.type, navire.longueur, nom);
+    affichage_placements(niveau, indice, navire.type, navire.longueur, nom, aleatoire);
 
     do
     {
@@ -24,8 +24,7 @@ Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], bool a
             navire.pos_y = rand() % 10;
             navire.pos_x = rand() % 10;
             navire.orientation = directions[rand() % 4];
-            // Ajout d'un délai pour améliorer l'aléatoire
-            nanosleep(&ts, NULL);
+            nanosleep(&ts, NULL); // Ajout d'un délai aléatoire pour améliorer l'aléatoire
         }
         else
         {
@@ -42,9 +41,7 @@ Navire creer_navire(int indice_navire, char nom[30], char grille[10][10], bool a
         }
     } while (!verifier_position_valide(navire.pos_y, navire.pos_x, navire.orientation, navire.longueur, grille));
 
-    if (niveau!=0 && aleatoire && indice == 1 || niveau==0 && aleatoire)
-        ts.tv_nsec = 500000000L; // 500ms
-        nanosleep(&ts, NULL);
-
+    if (niveau != 0 && aleatoire && indice == 1 || niveau == 0 && aleatoire)
+        ajoute_delai();
     return navire;
 }

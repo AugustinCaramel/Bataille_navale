@@ -14,17 +14,7 @@ typedef struct
     char nom[30];             // Nom du joueur, demandé en début de partie
 } Joueur;
 
-typedef struct
-{
-    bool etat; // Actif : mode cible, Inactif : mode chasse
-    int touche_position[20][2];
-    bool orientation[4];
-    int nombre_touches;
-
-} Cible;
-
 Joueur initialiser_joueur(int indice, int niveau); // Initialise les attributs du joueur : grilles, nom, placement des navires, indice (avec l'indice passé en paramètre)
-Cible initialiser_cible(); // Initialise les attributs de la cible : état, tableau des positions touchées (vide), orientations possibles, nombre de touches
 void placer_navires(Joueur *joueur, int niveau); // Définit le mode aléatoire ou non, crée les 5 navires et les positionne sur la grille
 void afficher_grilles(Joueur *attaquant, Joueur *defenseur); // Affichage des grilles de tirs des deux joueurs côte-côte
 void update_grille_tirs(Joueur *defenseur, Joueur *attaquant, int indice); // Remplace les X par des N sur un navire, sur une grille de tirs, si le navire est coulé
