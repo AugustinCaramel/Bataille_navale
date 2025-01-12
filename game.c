@@ -259,20 +259,20 @@ void genere_probabilite_case(char grille_tirs[10][10], int *nbr_case_adjacente, 
     int compteur = 0;
     if (grille_tirs[ligne][colone] == '.')
     {
-        for (int ligne_decale = ligne; grille_tirs[ligne_decale][colone] == '.' && ligne_decale < (ligne + taille_navire) && ligne_decale <= 9 && compteur < ((4 * taille_navire) - 1); ligne_decale++)
+        for (int ligne_decale = ligne; grille_tirs[ligne_decale][colone] == '.' && ligne_decale < (ligne + taille_navire) && ligne_decale <= 9 && compteur < ((4 * taille_navire) - 3); ligne_decale++)
         {
             compteur = compteur + 1;
         }
-        for (int ligne_decale = (ligne - 1); grille_tirs[ligne_decale][colone] == '.' && ligne_decale > (ligne - taille_navire) && ligne_decale >= 0 && compteur < ((4 * taille_navire) - 1); ligne_decale--)
+        for (int ligne_decale = (ligne - 1); grille_tirs[ligne_decale][colone] == '.' && ligne_decale > (ligne - taille_navire) && ligne_decale >= 0 && compteur < ((4 * taille_navire) - 3); ligne_decale--)
         {
             compteur = compteur + 1;
         }
 
-        for (int colone_decale = (colone + 1); grille_tirs[ligne][colone_decale] == '.' && colone_decale < (colone + taille_navire) && colone_decale <= 9 && compteur < ((4 * taille_navire) - 1); colone_decale++)
+        for (int colone_decale = (colone + 1); grille_tirs[ligne][colone_decale] == '.' && colone_decale < (colone + taille_navire) && colone_decale <= 9 && compteur < ((4 * taille_navire) - 3); colone_decale++)
         {
             compteur = compteur + 1;
         }
-        for (int colone_decale = (colone - 1); grille_tirs[ligne][colone_decale] == '.' && colone_decale > (colone - taille_navire) && colone_decale >= 0 && compteur < ((4 * taille_navire) - 1); colone_decale--)
+        for (int colone_decale = (colone - 1); grille_tirs[ligne][colone_decale] == '.' && colone_decale > (colone - taille_navire) && colone_decale >= 0 && compteur < ((4 * taille_navire) - 3); colone_decale--)
         {
             compteur = compteur + 1;
         }
